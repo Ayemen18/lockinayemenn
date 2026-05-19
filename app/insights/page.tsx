@@ -82,7 +82,18 @@ export default function InsightsPage() {
 
     try {
       const res = await fetch('/api/insights', { method: 'POST' })
-      const data = await res.json()
+      
+      let data
+      const contentType = res.headers.get("content-type")
+      if (contentType && contentType.includes("application/json")) {
+        data = await res.json()
+      } else {
+        const rawResponse = await res.text()
+        console.error('Server returned non-JSON response:', rawResponse)
+        setError(`Server error (HTTP ${res.status}): ${rawResponse.slice(0, 150)}...`)
+        setGenerating(false)
+        return
+      }
 
       if (data.error) {
         setError(data.error)
