@@ -39,7 +39,8 @@ export default function HomePage() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
 
-  const today = new Date().toISOString().split('T')[0]
+  const offset = new Date().getTimezoneOffset()
+  const today = new Date(Date.now() - offset * 60 * 1000).toISOString().split('T')[0]
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
 
@@ -72,14 +73,19 @@ export default function HomePage() {
           const d = new Date()
           
           // Grace period: if today is not logged yet, start checking from yesterday
-          const todayStr = d.toISOString().split('T')[0]
+          const localDate = (date: Date) => {
+            const tzOffset = date.getTimezoneOffset()
+            const local = new Date(date.getTime() - tzOffset * 60 * 1000)
+            return local.toISOString().split('T')[0]
+          }
+          const todayStr = localDate(d)
           const streakTodayEntry = logs.find((l: Log) => l.date === todayStr)
           if (!streakTodayEntry) {
             d.setDate(d.getDate() - 1)
           }
           
           while (true) {
-            const dateStr = d.toISOString().split('T')[0]
+            const dateStr = localDate(d)
             const entry = logs.find((l: Log) => l.date === dateStr)
             if (entry && entry.score > 0) {
               count++

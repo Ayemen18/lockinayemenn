@@ -54,15 +54,17 @@ function SquadContent() {
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
 
-  const today = new Date().toISOString().split('T')[0]
+  const offset = new Date().getTimezoneOffset()
+  const today = new Date(Date.now() - offset * 60 * 1000).toISOString().split('T')[0]
 
   // Get Monday of current week
   const weekStart = (() => {
     const d = new Date()
+    const offset = d.getTimezoneOffset()
     const day = d.getDay()
     const diff = d.getDate() - day + (day === 0 ? -6 : 1)
     d.setDate(diff)
-    return d.toISOString().split('T')[0]
+    return new Date(d.getTime() - offset * 60 * 1000).toISOString().split('T')[0]
   })()
 
   useEffect(() => {
@@ -143,11 +145,16 @@ function SquadContent() {
         const weekLogs = logs?.filter(l => l.date >= weekStart) || []
         const allLogs = logs || []
 
-        // Streak
+        // Streak — use local date to match how logs are saved
         let streak = 0
         const d = new Date()
+        const localDate = (date: Date) => {
+          const offset = date.getTimezoneOffset()
+          const local = new Date(date.getTime() - offset * 60 * 1000)
+          return local.toISOString().split('T')[0]
+        }
         while (true) {
-          const dateStr = d.toISOString().split('T')[0]
+          const dateStr = localDate(d)
           if (allLogs.find(l => l.date === dateStr)) {
             streak++
             d.setDate(d.getDate() - 1)
