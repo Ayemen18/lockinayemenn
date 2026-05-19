@@ -166,8 +166,8 @@ export default function DashboardPage() {
   const insights = [sleepInsight, studyInsight, weakDay].filter(Boolean)
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-neutral-100 flex flex-col font-sans">
-      <main className="flex-1 max-w-3xl w-full mx-auto px-8 py-10">
+    <div className="text-neutral-100 font-sans">
+      <div>
 
         {/* Dashboard Title block */}
         <FadeIn className="mb-8 border-b border-neutral-900 pb-5">
@@ -356,7 +356,7 @@ export default function DashboardPage() {
           )}
         </FadeIn>
 
-      </main>
+      </div>
 
       {selectedDate && (
         <HistoryModal

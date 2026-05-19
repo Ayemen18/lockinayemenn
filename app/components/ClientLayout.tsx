@@ -67,14 +67,16 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex flex-col select-none">
+    <div className="min-h-screen bg-[#0a0a0a] flex flex-col">
       
       {/* Permanent, static Navbar preserving Layout Continuity */}
       <Navbar />
 
       {/* Render children directly for 100% Next.js router compatibility and zero freezes */}
       <main className="flex-1 flex flex-col">
-        {children}
+        <div className="w-full max-w-7xl mx-auto px-6 py-8 flex-1">
+          {children}
+        </div>
       </main>
 
       {/* Keyboard Shortcuts Cheatsheet Overlay */}

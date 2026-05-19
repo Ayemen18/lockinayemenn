@@ -133,7 +133,7 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+      <div className="min-h-[50vh] flex items-center justify-center">
         <motion.div
           animate={{ opacity: [0.3, 1, 0.3] }}
           transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
@@ -146,8 +146,8 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-neutral-100 flex flex-col font-sans">
-      <main className="flex-1 max-w-3xl w-full mx-auto px-8 py-10">
+    <div className="text-neutral-100 font-sans max-w-3xl mx-auto py-2">
+      <div>
 
         {/* Local Welcome block */}
         <FadeIn className="mb-8 border-b border-neutral-900 pb-5">
@@ -163,13 +163,13 @@ export default function HomePage() {
               <div className="flex items-baseline gap-1.5">
                 <motion.span
                   key={streak}
-                  initial={{ opacity: 0, y: 4 }}
+                  initial={{ opacity: 0, y: -8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-5xl font-bold text-white tracking-tight"
+                  className="text-3xl font-bold tracking-tight text-white font-mono"
                 >
                   {streak}
                 </motion.span>
-                <span className="text-neutral-500 text-xs font-mono">days</span>
+                <span className="text-neutral-500 text-xs font-mono uppercase tracking-wider">days</span>
               </div>
               <p className={`text-[10px] mt-3 font-mono uppercase tracking-wide font-medium ${streak >= 7 ? 'text-green-500' : 'text-neutral-500'}`}>
                 {streak >= 14 ? '🔥 unstoppable' : streak >= 7 ? '🔥 on fire' : streak > 0 ? 'keep going' : 'start today'}
@@ -209,93 +209,86 @@ export default function HomePage() {
                       todayLog.score >= 60 ? 'bg-yellow-950 text-yellow-400 border border-yellow-900/30' :
                       'bg-red-950 text-red-400 border border-red-900/30'
                     }`}>
-                      {todayLog.score >= 80 ? 'strong' : todayLog.score >= 60 ? 'decent' : 'low'}
+                      {todayLog.score >= 80 ? 'elite' : todayLog.score >= 60 ? 'consistent' : 'imperfect'}
                     </span>
                   </div>
-                  <div className="w-full bg-neutral-950 rounded-full h-1 mb-3.5 overflow-hidden border border-neutral-900">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${todayLog.score}%` }}
-                      transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1], delay: 0.3 }}
-                      className="h-full bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.4)]"
-                    />
-                  </div>
-                  <p className="text-neutral-500 text-xs italic">"{quote}"</p>
+                  <p className="text-neutral-400 text-xs font-mono italic">
+                    "{quotes.find(q => todayLog.score >= q.min)?.text}"
+                  </p>
                 </div>
               )}
             </div>
           </StaggerItem>
         </FadeInStagger>
 
-        {/* 14-day Tracking Heatmap */}
-        <FadeIn delay={0.15} className="bg-neutral-900 border border-neutral-800/80 rounded-2xl p-5 mb-5">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-xs text-neutral-500 font-mono uppercase tracking-widest">Last 14 days</p>
-            <p className="text-[10px] text-neutral-600 font-mono uppercase tracking-wider">{allLogs.length} days logged</p>
-          </div>
-          <div className="grid gap-1.5" style={{ gridTemplateColumns: 'repeat(14, 1fr)' }}>
-            {last14.map(({ date, log }, i) => (
+        {/* 14-day tracking row */}
+        <FadeIn delay={0.12} className="bg-neutral-900 border border-neutral-800/80 rounded-2xl p-5 mb-5">
+          <p className="text-xs text-neutral-500 font-mono uppercase tracking-widest mb-4">14-day history</p>
+          <div className="grid grid-cols-14 gap-1.5">
+            {last14.map(({ date, log }) => (
               <motion.div
                 key={date}
-                initial={{ opacity: 0, scale: 0.7 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.15 + i * 0.03, duration: 0.2 }}
-                className="flex flex-col items-center gap-1.5"
-              >
-                <motion.div
-                  whileHover={{
-                    scale: 1.22,
-                    zIndex: 10,
-                    outline: date === today ? '1.5px solid #22c55e' : '1px solid rgba(255, 255, 255, 0.2)',
-                    outlineOffset: '1.5px',
-                  }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-                  onClick={() => {
-                    setSelectedDate(date)
-                    setModalOpen(true)
-                  }}
-                  style={{
-                    aspectRatio: '1',
-                    width: '100%',
-                    borderRadius: '2px',
-                    background: log ? heatColor(log.score) : '#1f1f1f',
-                    outline: date === today ? '1.5px solid #22c55e' : 'none',
-                    outlineOffset: '1.5px',
-                    transition: 'background 0.3s ease, outline-color 0.2s ease',
-                  }}
-                  title={log ? `${date}: ${log.score}% (Click to view)` : `${date} (Click to view)`}
-                  className="cursor-pointer"
-                />
-                <span className="text-neutral-500 text-[10px] font-mono font-medium uppercase mt-0.5">
-                  {new Date(date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'narrow' })}
-                </span>
-              </motion.div>
+                title={log ? `${date}: ${log.score}% (Click to view)` : `${date} (Click to view)`}
+                whileHover={{ scale: 1.18, zIndex: 10 }}
+                onClick={() => { setSelectedDate(date); setModalOpen(true) }}
+                className="cursor-pointer"
+                style={{
+                  aspectRatio: '1',
+                  borderRadius: '2px',
+                  background: log ? heatColor(log.score) : '#1a1a1a',
+                  outline: date === today ? '1.5px solid #22c55e' : 'none',
+                  outlineOffset: '1.5px',
+                  transition: 'background 0.2s ease',
+                }}
+              />
             ))}
           </div>
         </FadeIn>
 
-        {/* Dynamic Aggregations */}
-        <FadeInStagger className="grid grid-cols-4 gap-3 mb-8">
-          {[
-            { val: allLogs.length > 0 ? `${Math.round(allLogs.reduce((s, l) => s + l.score, 0) / allLogs.length)}%` : '—', lbl: 'Avg score' },
-            { val: allLogs.filter(l => l.score >= 80).length, lbl: 'Strong days' },
-            { val: allLogs.length > 0 ? `${Math.round((allLogs.filter(l => l.score >= 60).length / allLogs.length) * 100)}%` : '—', lbl: 'Consistency' },
-            { val: Math.max(0, 30 - allLogs.length), lbl: 'Days to 30' },
-          ].map(({ val, lbl }) => (
-            <StaggerItem key={lbl}>
-              <div className="bg-neutral-900 border border-neutral-800/80 rounded-2xl p-4">
-                <div className="text-xl font-bold text-white tracking-tight">{val}</div>
-                <div className="text-[10px] text-neutral-500 font-mono uppercase tracking-wider mt-1">{lbl}</div>
-              </div>
-            </StaggerItem>
-          ))}
-        </FadeInStagger>
+        {/* Action Panel / Quick logs */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+          <FadeIn delay={0.18} className="bg-neutral-900 border border-neutral-800/80 rounded-2xl p-5 flex flex-col justify-between h-44">
+            <div>
+              <p className="text-xs text-neutral-500 font-mono uppercase tracking-widest mb-2">check-in console</p>
+              <h3 className="text-sm text-neutral-400 font-sans leading-relaxed">
+                {todayLog
+                  ? "Log updated. Excellent progress made today."
+                  : "Stand by. Today is unlogged. Execute routine."}
+              </h3>
+            </div>
+            <button
+              onClick={() => router.push('/journal')}
+              className={`w-full text-xs font-semibold py-2.5 rounded-xl transition-all duration-200 ${
+                todayLog
+                  ? 'bg-neutral-850 hover:bg-neutral-800 text-neutral-300'
+                  : 'bg-white hover:bg-neutral-200 text-black'
+              }`}
+            >
+              {todayLog ? 'Edit Check-In' : 'Start Check-In'}
+            </button>
+          </FadeIn>
 
-        {/* High Contrast Footer Link controls */}
-        <FadeIn delay={0.3} className="flex justify-between items-center border-t border-neutral-900/60 pt-5">
+          <FadeIn delay={0.22} className="bg-neutral-900 border border-neutral-800/80 rounded-2xl p-5 flex flex-col justify-between h-44">
+            <div>
+              <p className="text-xs text-neutral-500 font-mono uppercase tracking-widest mb-2">command focus</p>
+              <p className="text-xs text-neutral-400 font-sans leading-relaxed italic">
+                "{quote}"
+              </p>
+            </div>
+            <button
+              onClick={() => router.push('/insights')}
+              className="w-full bg-neutral-900 hover:bg-neutral-800 text-neutral-300 text-xs font-semibold py-2.5 rounded-xl border border-neutral-800 hover:border-neutral-700 transition-colors duration-200"
+            >
+              Consult AI Coach
+            </button>
+          </FadeIn>
+        </div>
+
+        {/* Footer shortcuts */}
+        <FadeIn delay={0.26} className="flex justify-between items-center pt-3 border-t border-neutral-900">
           <button
             onClick={() => router.push('/dashboard')}
-            className="text-xs text-neutral-500 hover:text-white transition-colors duration-200 font-mono uppercase tracking-wider"
+            className="text-xs text-neutral-500 hover:text-neutral-300 transition-colors duration-200 font-mono uppercase tracking-wider"
           >
             full analytics →
           </button>
@@ -307,7 +300,7 @@ export default function HomePage() {
           </button>
         </FadeIn>
 
-      </main>
+      </div>
 
       {selectedDate && (
         <HistoryModal

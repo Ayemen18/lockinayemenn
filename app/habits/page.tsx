@@ -153,8 +153,8 @@ export default function HabitsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-neutral-100 flex flex-col font-sans">
-      <main className="flex-1 max-w-5xl w-full mx-auto px-8 py-10">
+    <div className="text-neutral-100 font-sans">
+      <div>
         
         {/* Layout Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
@@ -409,7 +409,7 @@ export default function HabitsPage() {
 
         </div>
 
-      </main>
+      </div>
     </div>
   )
 }

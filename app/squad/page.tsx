@@ -299,8 +299,8 @@ function SquadContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-neutral-100 flex flex-col font-sans">
-      <main className="flex-1 max-w-4xl w-full mx-auto px-8 py-10">
+    <div className="text-neutral-100 font-sans">
+      <div>
 
         <FadeIn className="flex items-start justify-between mb-10 pb-5 border-b border-neutral-900">
           <div>
@@ -636,7 +636,7 @@ function SquadContent() {
             )}
           </>
         )}
-      </main>
+      </div>
     </div>
   )
 }
