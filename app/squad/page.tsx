@@ -140,6 +140,13 @@ function SquadContent() {
       return
     }
 
+    // Fetch user profiles to get leetcode_usernames
+    const userIds = members.map(m => m.user_id)
+    const { data: profiles } = await supabase
+      .from('user_profiles')
+      .select('id, leetcode_username')
+      .in('id', userIds)
+
     const stats: MemberStats[] = await Promise.all(
       members.map(async (member) => {
         const { data: logs } = await supabase
@@ -153,7 +160,7 @@ function SquadContent() {
         const weekLogs = logs?.filter(l => l.date >= weekStart) || []
         const allLogs = logs || []
 
-        const streak = calculateStreak(allLogs)
+        let streak = calculateStreak(allLogs)
 
         const weekAvg = weekLogs.length > 0
           ? Math.round(weekLogs.reduce((s, l) => s + l.score, 0) / weekLogs.length)
@@ -172,9 +179,30 @@ function SquadContent() {
           ? recentStudy.reduce((s, l) => s + (l.study_hours || 0), 0) / recentStudy.length
           : null
 
-        const weekLeetcode = logs?.filter(l => l.date >= weekStart) || []
-        const leetcodeSolvedWeek = weekLeetcode.reduce((s, l) => s + (l.leetcode_solved || 0), 0)
-        const leetcodeSolvedToday = todayLog?.leetcode_solved || 0
+        // Fetch LeetCode username
+        const memberProfile = profiles?.find(p => p.id === member.user_id)
+        const username = memberProfile?.leetcode_username
+
+        let leetcodeSolvedToday = todayLog?.leetcode_solved || 0
+
+        if (username) {
+          try {
+            const res = await fetch(`/api/leetcode?username=${encodeURIComponent(username)}`)
+            const json = await res.json()
+            if (json && !json.error) {
+              leetcodeSolvedToday = json.todaySolvedCount || 0
+              if (json.streak > streak) {
+                streak = json.streak
+              }
+            }
+          } catch (err) {
+            console.warn('Failed to fetch real-time LeetCode stats for member:', username, err)
+          }
+        }
+
+        const weekLeetcodeLogs = logs?.filter(l => l.date >= weekStart && l.date !== today) || []
+        const loggedWeekSolved = weekLeetcodeLogs.reduce((s, l) => s + (l.leetcode_solved || 0), 0)
+        const leetcodeSolvedWeek = loggedWeekSolved + leetcodeSolvedToday
 
         return {
           user_id: member.user_id,
@@ -642,7 +670,7 @@ function SquadContent() {
                     exit={{ opacity: 0, x: -8 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <p className="text-xs text-neutral-600 font-mono mb-4">
+                    <p className="text-xs text-neutral-500 font-mono mb-4">
                       Week of {weekStart} — ranked by problems solved
                     </p>
 
@@ -671,7 +699,7 @@ function SquadContent() {
                                 <div className="w-full bg-neutral-850 rounded-full h-1 overflow-hidden">
                                   <motion.div
                                     initial={{ width: 0 }}
-                                    animate={{ width: memberStats[0]?.leetcodeSolvedWeek > 0
+                                    animate={{ width: Math.max(...memberStats.map(x => x.leetcodeSolvedWeek)) > 0
                                       ? `${(m.leetcodeSolvedWeek / Math.max(...memberStats.map(x => x.leetcodeSolvedWeek || 1))) * 100}%`
                                       : '0%'
                                     }}
