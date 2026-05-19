@@ -11,11 +11,39 @@ type HistoryModalProps = {
   habits: Habit[]
 }
 
-const categoryBorderClasses: Record<string, string> = {
-  sleep:   'border-blue-900/30 text-blue-400 bg-blue-950/20',
-  study:   'border-green-900/30 text-green-400 bg-green-950/20',
-  health:  'border-orange-900/30 text-orange-400 bg-orange-950/20',
-  mindset: 'border-purple-900/30 text-purple-400 bg-purple-950/20',
+const colorSchemes = [
+  'border-green-900/30 text-green-400 bg-green-950/20',
+  'border-orange-900/30 text-orange-400 bg-orange-950/20',
+  'border-rose-900/30 text-rose-400 bg-rose-950/20',
+  'border-purple-900/30 text-purple-400 bg-purple-950/20',
+  'border-pink-900/30 text-pink-400 bg-pink-950/20',
+  'border-cyan-900/30 text-cyan-400 bg-cyan-950/20',
+  'border-yellow-900/30 text-yellow-400 bg-yellow-950/20',
+  'border-blue-900/30 text-blue-400 bg-blue-950/20',
+  'border-emerald-900/30 text-emerald-400 bg-emerald-950/20',
+]
+
+function getCategoryClass(category: string) {
+  const upper = (category || 'STUDY').toUpperCase()
+  switch (upper) {
+    case 'STUDY': return colorSchemes[0]
+    case 'HEALTH': return colorSchemes[1]
+    case 'FITNESS': return colorSchemes[2]
+    case 'MINDSET': return colorSchemes[3]
+    case 'SOCIAL': return colorSchemes[4]
+    case 'CODING': return colorSchemes[5]
+    case 'BUSINESS': return colorSchemes[6]
+    case 'SPIRITUAL': return colorSchemes[7]
+    case 'CAREER': return colorSchemes[8]
+    default: {
+      let hash = 0
+      for (let i = 0; i < upper.length; i++) {
+        hash = upper.charCodeAt(i) + ((hash << 5) - hash)
+      }
+      const index = Math.abs(hash) % colorSchemes.length
+      return colorSchemes[index]
+    }
+  }
 }
 
 export default function HistoryModal({ isOpen, onClose, date, log, habits }: HistoryModalProps) {
@@ -122,7 +150,7 @@ export default function HistoryModal({ isOpen, onClose, date, log, habits }: His
                             </span>
 
                             {/* Pts Weight */}
-                            <span className={`text-[9px] px-2 py-0.5 rounded-full font-mono font-medium ${categoryBorderClasses[habit.category]}`}>
+                            <span className={`text-[9px] px-2 py-0.5 rounded-full font-mono font-medium ${getCategoryClass(habit.category)}`}>
                               {habit.points} pts
                             </span>
                           </div>

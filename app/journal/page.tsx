@@ -15,11 +15,39 @@ type Habit = {
   sort_order: number
 }
 
-const categoryColors: Record<string, string> = {
-  sleep:   'text-blue-400 bg-blue-950/60 border border-blue-900/20',
-  study:   'text-green-400 bg-green-950/60 border border-green-900/20',
-  health:  'text-orange-400 bg-orange-950/60 border border-orange-900/20',
-  mindset: 'text-purple-400 bg-purple-950/60 border border-purple-900/20',
+const colorSchemes = [
+  { text: 'text-green-400 bg-green-950/60 border border-green-900/30', bg: 'bg-green-500' },
+  { text: 'text-orange-400 bg-orange-950/60 border border-orange-900/30', bg: 'bg-orange-500' },
+  { text: 'text-rose-400 bg-rose-950/60 border border-rose-900/30', bg: 'bg-rose-500' },
+  { text: 'text-purple-400 bg-purple-950/60 border border-purple-900/30', bg: 'bg-purple-500' },
+  { text: 'text-pink-400 bg-pink-950/60 border border-pink-900/30', bg: 'bg-pink-500' },
+  { text: 'text-cyan-400 bg-cyan-950/60 border border-cyan-900/30', bg: 'bg-cyan-500' },
+  { text: 'text-yellow-400 bg-yellow-950/60 border border-yellow-900/30', bg: 'bg-yellow-500' },
+  { text: 'text-blue-400 bg-blue-950/60 border border-blue-900/30', bg: 'bg-blue-500' },
+  { text: 'text-emerald-400 bg-emerald-950/60 border border-emerald-900/30', bg: 'bg-emerald-500' },
+]
+
+function getCategoryScheme(category: string) {
+  const upper = (category || 'STUDY').toUpperCase()
+  switch (upper) {
+    case 'STUDY': return colorSchemes[0]
+    case 'HEALTH': return colorSchemes[1]
+    case 'FITNESS': return colorSchemes[2]
+    case 'MINDSET': return colorSchemes[3]
+    case 'SOCIAL': return colorSchemes[4]
+    case 'CODING': return colorSchemes[5]
+    case 'BUSINESS': return colorSchemes[6]
+    case 'SPIRITUAL': return colorSchemes[7]
+    case 'CAREER': return colorSchemes[8]
+    default: {
+      let hash = 0
+      for (let i = 0; i < upper.length; i++) {
+        hash = upper.charCodeAt(i) + ((hash << 5) - hash)
+      }
+      const index = Math.abs(hash) % colorSchemes.length
+      return colorSchemes[index]
+    }
+  }
 }
 
 export default function JournalPage() {
@@ -267,7 +295,7 @@ export default function JournalPage() {
                         />
                       </span>
                       
-                      <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-mono uppercase font-medium tracking-wide ${categoryColors[habit.category]}`}>
+                      <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-mono uppercase font-medium tracking-wide ${getCategoryScheme(habit.category).text}`}>
                         {habit.points} pts
                       </span>
                     </motion.div>
