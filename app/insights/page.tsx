@@ -210,17 +210,15 @@ export default function InsightsPage() {
             <p className="text-sm text-neutral-300 mb-4 leading-relaxed">
               Log at least 3 days of discipline data to enable advanced vector insights.
             </p>
-            <div className="flex gap-1.5 h-1 bg-neutral-950 rounded-full overflow-hidden border border-neutral-850">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <div
-                  key={i}
-                  className={`h-full flex-1 transition-all duration-500 ${
-                    i < logCount ? 'bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.4)]' : 'bg-transparent'
-                  }`}
-                />
-              ))}
+            <div className="w-full bg-neutral-850 rounded-full h-1 mt-3 overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${Math.min((logCount / 3) * 100, 100)}%` }}
+                transition={{ duration: 0.6 }}
+                className="h-full bg-green-500 rounded-full"
+              />
             </div>
-            <p className="text-[10px] text-neutral-600 font-mono mt-3 uppercase tracking-wider">{logCount} / 3 days recorded</p>
+            <p className="text-xs text-neutral-700 font-mono mt-2">{logCount} / 3 days recorded</p>
           </FadeIn>
         )}
 

@@ -137,16 +137,11 @@ export default function Navbar() {
               <div className="flex items-center gap-3 pl-3 border-l border-neutral-800">
                 <button
                   onClick={() => router.push('/profile')}
-                  className="flex items-center gap-2 group hover:opacity-80 transition-opacity"
-                  title="Profile Settings"
+                  title="Profile & Settings"
+                  className="w-6 h-6 rounded-full bg-neutral-800 border border-neutral-700 hover:border-neutral-500 flex items-center justify-center transition-colors"
                 >
-                  <div className="w-6 h-6 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center group-hover:border-neutral-500 transition-colors">
-                    <span className="text-xs text-neutral-400 font-mono">
-                      {userName.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                  <span className="text-xs text-neutral-500 font-mono hidden lg:block group-hover:text-neutral-300 transition-colors">
-                    {userName}
+                  <span className="text-xs text-neutral-400 font-mono">
+                    {userName.charAt(0).toUpperCase()}
                   </span>
                 </button>
                 <button
@@ -154,10 +149,14 @@ export default function Navbar() {
                     await supabase.auth.signOut()
                     router.push('/login')
                   }}
-                  className="text-neutral-700 hover:text-red-400 text-xs font-mono transition-colors pl-1"
-                  title="Sign Out"
+                  title="Sign out"
+                  className="text-neutral-700 hover:text-neutral-400 transition-colors ml-1 p-1 rounded-lg hover:bg-neutral-800"
                 >
-                  out
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                  </svg>
                 </button>
               </div>
             </>

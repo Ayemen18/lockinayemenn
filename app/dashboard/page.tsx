@@ -6,7 +6,6 @@ import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
 import { motion } from 'framer-motion'
 import { FadeIn, FadeInStagger, StaggerItem } from '../components/FadeIn'
 import { calculateStreak } from '../lib/streak'
-import LeetCodeCard from '../components/LeetCodeCard'
 
 type Log = {
   date: string
@@ -253,8 +252,8 @@ export default function DashboardPage() {
                   <span className="text-xs text-neutral-700">more</span>
                 </div>
               </div>
-              {/* Fixed square cells using table-like layout */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(30, 1fr)', gap: '4px' }}>
+              {/* Fixed square heatmap cells */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
                 {last30.map(({ date, log }, i) => (
                   <motion.div
                     key={date}
@@ -263,20 +262,25 @@ export default function DashboardPage() {
                     transition={{ delay: 0.05 + i * 0.01 }}
                     title={log ? `${date}: ${log.score}%` : date}
                     style={{
-                      paddingBottom: '100%',
-                      borderRadius: '2px',
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '3px',
                       background: log ? heatColor(log.score) : '#1f1f1f',
                       outline: date === today ? '1.5px solid #22c55e' : 'none',
                       outlineOffset: '1.5px',
-                      position: 'relative',
+                      flexShrink: 0,
                     }}
                   />
                 ))}
               </div>
             </div>
             <div className="flex justify-between mt-3">
-              <span className="text-xs text-neutral-700 font-mono">{logs.length} days logged</span>
-              <span className="text-xs text-neutral-700 font-mono">{Math.max(0, 30 - logs.length)} days to 30</span>
+              <span className="text-xs text-neutral-700 font-mono">
+                {logs.length === 0 ? 'Day 1 starts today' : `${logs.length} days in`}
+              </span>
+              <span className="text-xs text-neutral-700 font-mono">
+                {logs.length >= 30 ? '30 day milestone reached 🎯' : `${30 - logs.length} days to first milestone`}
+              </span>
             </div>
           </div>
 
@@ -316,36 +320,30 @@ export default function DashboardPage() {
           </div>
         </FadeIn>
 
-        {/* Row 3 — Insights + LeetCode side by side */}
-        <FadeIn delay={0.2} className="grid grid-cols-2 gap-3 mb-4">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 flex flex-col justify-between">
-            <div>
-              <p className="text-xs text-neutral-600 font-mono uppercase tracking-widest mb-4">Behavioral insights</p>
-              {insights.length > 0 ? (
-                <div className="space-y-3">
-                  {insights.map((insight, i) => (
-                    <div key={i} className="flex gap-3 items-start">
-                      <div className="w-1 h-1 rounded-full bg-green-500 mt-1.5 flex-shrink-0" />
-                      <p className="text-sm text-neutral-300 leading-relaxed">{insight}</p>
-                    </div>
-                  ))}
+        {/* Row 3 — Insights (Full Width) */}
+        <FadeIn delay={0.2} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 mb-4">
+          <p className="text-xs text-neutral-600 font-mono uppercase tracking-widest mb-4">Behavioral insights</p>
+          {insights.length > 0 ? (
+            <div className="space-y-3">
+              {insights.map((insight, i) => (
+                <div key={i} className="flex gap-3 items-start">
+                  <div className="w-1 h-1 rounded-full bg-green-500 mt-1.5 flex-shrink-0" />
+                  <p className="text-sm text-neutral-300 leading-relaxed">{insight}</p>
                 </div>
-              ) : (
-                <>
-                  <p className="text-sm text-neutral-600 mb-3">
-                    Log {Math.max(0, 5 - logs.length)} more days to unlock pattern detection.
-                  </p>
-                  <div className="flex gap-1.5">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <div key={i} className={`h-0.5 flex-1 rounded-full ${i < logs.length ? 'bg-green-500' : 'bg-neutral-800'}`} />
-                    ))}
-                  </div>
-                </>
-              )}
+              ))}
             </div>
-          </div>
-
-          <LeetCodeCard />
+          ) : (
+            <>
+              <p className="text-sm text-neutral-600 mb-3">
+                Log {Math.max(0, 5 - logs.length)} more days to unlock pattern detection.
+              </p>
+              <div className="flex gap-1.5">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className={`h-0.5 flex-1 rounded-full ${i < logs.length ? 'bg-green-500' : 'bg-neutral-800'}`} />
+                ))}
+              </div>
+            </>
+          )}
         </FadeIn>
 
         {/* Row 4 — Recent reflections */}

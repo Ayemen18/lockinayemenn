@@ -304,25 +304,20 @@ function SquadContent() {
 
         <FadeIn className="flex items-start justify-between mb-10 pb-5 border-b border-neutral-900">
           <div>
-            <button
-              onClick={() => router.push('/home')}
-              className="text-neutral-600 hover:text-neutral-400 text-xs font-mono mb-2.5 block transition-colors uppercase tracking-wider"
-            >← back</button>
-            <h1 className="text-xl font-bold text-white tracking-tight">Squad Competitions</h1>
-            <p className="text-xs text-neutral-500 font-mono mt-1">Live daily matrix & weekly ranking analytics</p>
+            <h1 className="text-2xl font-semibold text-white tracking-tight">Squad</h1>
+            <p className="text-sm text-neutral-600 font-mono mt-1">Compete with your people</p>
           </div>
           <div className="flex gap-2">
             <button
               onClick={() => { setShowJoin(true); setShowCreate(false) }}
-              className="text-xs font-semibold text-neutral-400 hover:text-white px-4 py-2.5 rounded-xl border border-neutral-800 hover:border-neutral-600 transition-colors uppercase tracking-wider"
+              className="text-sm text-neutral-400 hover:text-white px-4 py-2 rounded-lg border border-neutral-800 hover:border-neutral-600 transition-colors"
             >
               Join squad
             </button>
             <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
               onClick={() => { setShowCreate(true); setShowJoin(false) }}
-              className="text-xs font-bold bg-white text-black px-4 py-2.5 rounded-xl hover:bg-neutral-100 transition-colors uppercase tracking-wider"
+              className="text-sm font-medium bg-white text-black px-4 py-2 rounded-lg hover:bg-neutral-100 transition-colors"
             >
               Create squad
             </motion.button>
@@ -396,9 +391,16 @@ function SquadContent() {
         </AnimatePresence>
 
         {squads.length === 0 && !showCreate && !showJoin ? (
-          <FadeIn className="bg-neutral-900 border border-neutral-800/40 border-dashed rounded-2xl p-16 text-center shadow-inner">
-            <p className="text-sm text-neutral-500 font-medium mb-1">No squad connections established.</p>
-            <p className="text-xs text-neutral-600 font-mono uppercase tracking-wider">Create a squad or enter a 6-digit invite code to compete</p>
+          <FadeIn className="bg-neutral-900 border border-neutral-800/60 border-dashed rounded-2xl p-16 text-center">
+            <p className="text-2xl mb-2">⚔️</p>
+            <p className="text-sm text-white font-medium mb-1">No squad yet</p>
+            <p className="text-xs text-neutral-600 font-mono mb-4">Create one and challenge your friends to keep up.</p>
+            <button
+              onClick={() => setShowCreate(true)}
+              className="text-sm bg-white text-black font-semibold px-5 py-2 rounded-xl hover:bg-neutral-100 transition-colors"
+            >
+              Create your squad
+            </button>
           </FadeIn>
         ) : activeSquad && (
           <>
