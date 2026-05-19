@@ -86,17 +86,16 @@ export async function POST() {
       return NextResponse.json({ report: existing.report, cached: true })
     }
 
-    const apiKey = process.env.GEMINI_API_KEY
+    const apiKey = process.env.OPENAI_API_KEY
     if (!apiKey) {
-      console.error('GEMINI_API_KEY is not defined in env variables.')
+      console.error('OPENAI_API_KEY is not defined in env variables.')
       return NextResponse.json({ 
-        error: 'GEMINI_API_KEY is missing in your Vercel or local environment variables.' 
+        error: 'OPENAI_API_KEY is missing in your Vercel or local environment variables.' 
       }, { status: 400 })
     }
 
     const client = new OpenAI({
       apiKey: apiKey,
-      baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
     })
 
     const prompt = `You are a personal discipline coach. Analyze this data and write a complete coach report. Be direct and specific.
@@ -129,7 +128,7 @@ One honest thing they need to hear.`
     let report = ''
     try {
       const completion = await client.chat.completions.create({
-        model: 'gemini-2.5-flash',
+        model: 'gpt-4o',
         max_tokens: 2000,
         messages: [{ role: 'user', content: prompt }],
       })
@@ -143,9 +142,9 @@ One honest thing they need to hear.`
         }, { status: 500 })
       }
     } catch (apiErr: any) {
-      console.error('Google Gemini API call failed:', apiErr)
+      console.error('OpenAI API call failed:', apiErr)
       return NextResponse.json({ 
-        error: `Gemini API Error: ${apiErr.message || apiErr}` 
+        error: `OpenAI API Error: ${apiErr.message || apiErr}` 
       }, { status: 502 })
     }
 
