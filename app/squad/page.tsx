@@ -19,6 +19,7 @@ type MemberStats = {
   allTimeAvg: number
   leetcodeSolvedToday: number
   leetcodeTotalSolved: number | null
+  leetcodeStreak: number
 }
 
 type Squad = {
@@ -160,7 +161,7 @@ function SquadContent() {
         const weekLogs = logs?.filter(l => l.date >= weekStart) || []
         const allLogs = logs || []
 
-        let streak = calculateStreak(allLogs)
+        const streak = calculateStreak(allLogs)
 
         const weekAvg = weekLogs.length > 0
           ? Math.round(weekLogs.reduce((s, l) => s + l.score, 0) / weekLogs.length)
@@ -185,6 +186,7 @@ function SquadContent() {
 
         let leetcodeSolvedToday = todayLog?.leetcode_solved || 0
         let leetcodeTotalSolved: number | null = null
+        let leetcodeStreak = 0
 
         if (username) {
           try {
@@ -193,9 +195,7 @@ function SquadContent() {
             if (json && !json.error) {
               leetcodeSolvedToday = json.todaySolvedCount || 0
               leetcodeTotalSolved = json.totalSolved || null
-              if (json.streak > streak) {
-                streak = json.streak
-              }
+              leetcodeStreak = json.streak || 0
             }
           } catch (err) {
             console.warn('Failed to fetch real-time LeetCode stats for member:', username, err)
@@ -214,6 +214,7 @@ function SquadContent() {
           allTimeAvg,
           leetcodeSolvedToday,
           leetcodeTotalSolved,
+          leetcodeStreak,
         }
       })
     )
@@ -725,7 +726,7 @@ function SquadContent() {
 
                               <div className="text-right ml-4 border-l border-neutral-850 pl-4 min-w-[70px]">
                                 <div className="text-lg font-bold text-white font-mono flex items-center justify-end gap-1">
-                                  {m.streak}
+                                  {m.leetcodeStreak}
                                   <span className="text-xs">🔥</span>
                                 </div>
                                 <div className="text-[9px] text-neutral-650 font-mono uppercase mt-0.5">streak</div>
