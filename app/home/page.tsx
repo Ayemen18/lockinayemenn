@@ -147,7 +147,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="text-neutral-100 font-sans max-w-3xl mx-auto py-2">
+    <div className="text-neutral-100 font-sans">
       <div>
 
         {/* Local Welcome block */}

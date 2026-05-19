@@ -74,7 +74,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
       {/* Render children directly for 100% Next.js router compatibility and zero freezes */}
       <main className="flex-1 flex flex-col">
-        <div className="w-full max-w-7xl mx-auto px-6 py-8 flex-1">
+        <div className="w-full max-w-5xl mx-auto px-8 py-8 flex-1">
           {children}
         </div>
       </main>
