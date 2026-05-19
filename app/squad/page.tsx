@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -29,7 +29,7 @@ function generateCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase()
 }
 
-export default function SquadPage() {
+function SquadContent() {
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -639,5 +639,21 @@ export default function SquadPage() {
         )}
       </main>
     </div>
+  )
+}
+
+export default function SquadPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <motion.div
+          animate={{ opacity: [0.3, 1, 0.3] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          className="text-sm text-neutral-700 font-mono"
+        >loading...</motion.div>
+      </div>
+    }>
+      <SquadContent />
+    </Suspense>
   )
 }
