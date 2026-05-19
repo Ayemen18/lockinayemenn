@@ -45,6 +45,7 @@ export default function Navbar() {
     { name: 'Dashboard', path: '/dashboard' },
     { name: 'Habits', path: '/habits' },
     { name: 'AI Coach', path: '/insights' },
+    { name: 'Squad', path: '/squad' },
   ]
 
   return (

@@ -43,6 +43,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       } else if (key === 'i') {
         e.preventDefault()
         router.push('/insights')
+      } else if (key === 'q') {
+        e.preventDefault()
+        router.push('/squad')
       } else if (key === 'p') {
         e.preventDefault()
         router.push('/profile')
@@ -115,6 +118,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                   { key: 'I', desc: 'Navigate to AI Coach Insights' },
                   { key: 'C', desc: 'Open Daily Check-In Journal' },
                   { key: 'S', desc: 'Configure Habit Point Profiles' },
+                  { key: 'Q', desc: 'Navigate to Squad Competitions' },
                   { key: 'P', desc: 'Edit User Settings / Profile' },
                   { key: '?', desc: 'Toggle keyboard shortcuts cheatsheet' },
                   { key: 'Esc', desc: 'Close open overlay modals instantly' },
