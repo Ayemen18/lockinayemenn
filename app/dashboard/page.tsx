@@ -6,16 +6,8 @@ import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
 import { motion } from 'framer-motion'
 import { FadeIn, FadeInStagger, StaggerItem } from '../components/FadeIn'
 import { calculateStreak } from '../lib/streak'
-
-type Log = {
-  date: string
-  score: number
-  earned_points: number
-  total_points: number
-  study_hours: number | null
-  sleep_time: string | null
-  reflection: string | null
-}
+import HistoryModal from '../components/HistoryModal'
+import type { Log, Habit } from '../types'
 
 const quotes = [
   { min: 90, text: "Elite execution. You're building something real." },
@@ -38,8 +30,13 @@ export default function DashboardPage() {
   )
   const router = useRouter()
   const [logs, setLogs] = useState<Log[]>([])
+  const [habits, setHabits] = useState<Habit[]>([])
   const [userName, setUserName] = useState('')
   const [loading, setLoading] = useState(true)
+
+  // Modal inspection states
+  const [selectedDate, setSelectedDate] = useState<string | null>(null)
+  const [modalOpen, setModalOpen] = useState(false)
 
   const today = (() => {
     const d = new Date()
@@ -54,10 +51,17 @@ export default function DashboardPage() {
         return
       }
       setUserName(user.user_metadata?.display_name || user.email?.split('@')[0] || '')
-      const { data } = await supabase
+      
+      const { data: logsData } = await supabase
         .from('daily_logs').select('*')
         .eq('user_id', user.id).order('date', { ascending: true })
-      if (data) setLogs(data)
+      if (logsData) setLogs(logsData as Log[])
+
+      const { data: habitsData } = await supabase
+        .from('habits').select('*')
+        .eq('user_id', user.id)
+      if (habitsData) setHabits(habitsData as Habit[])
+
       setLoading(false)
     }
     load()
@@ -253,14 +257,20 @@ export default function DashboardPage() {
                 </div>
               </div>
               {/* Fixed square heatmap cells */}
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+              <div className="relative z-10" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
                 {last30.map(({ date, log }, i) => (
                   <motion.div
                     key={date}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.05 + i * 0.01 }}
-                    title={log ? `${date}: ${log.score}%` : date}
+                    whileHover={{ scale: 1.15, zIndex: 20, outline: '1.5px solid #22c55e', outlineOffset: '1.5px' }}
+                    onClick={() => {
+                      setSelectedDate(date)
+                      setModalOpen(true)
+                    }}
+                    title={log ? `${date}: ${log.score}% (click to inspect)` : `${date}: Not logged`}
+                    className="cursor-pointer transition-all duration-100"
                     style={{
                       width: '24px',
                       height: '24px',
@@ -293,11 +303,17 @@ export default function DashboardPage() {
                 const dayName = new Date(date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short' })
                 return (
                   <div key={date} className="flex-1 flex flex-col items-center gap-1">
-                    <div className="w-full flex items-end" style={{ height: '84px' }}>
+                    <div className="w-full flex items-end cursor-pointer" style={{ height: '84px' }}
+                      onClick={() => {
+                        setSelectedDate(date)
+                        setModalOpen(true)
+                      }}
+                    >
                       <motion.div
                         initial={{ height: 0 }}
                         animate={{ height: log ? `${Math.max(log.score, 4)}%` : '3px' }}
                         transition={{ duration: 0.5, delay: 0.2 }}
+                        whileHover={{ scaleY: 1.05, filter: 'brightness(1.15)' }}
                         style={{
                           width: '100%',
                           borderRadius: '3px 3px 0 0',
@@ -308,6 +324,7 @@ export default function DashboardPage() {
                             : log.score >= 60 ? '#86efac'
                             : '#3f6212',
                           minHeight: '3px',
+                          originY: 1,
                         }}
                       />
                     </div>
@@ -369,6 +386,18 @@ export default function DashboardPage() {
         )}
 
       </div>
+
+      {/* History Inspection Modal */}
+      {selectedDate && (
+        <HistoryModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          date={selectedDate}
+          log={logs.find(l => l.date === selectedDate)}
+          habits={habits}
+        />
+      )}
+
     </div>
   )
 }
