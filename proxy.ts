@@ -62,12 +62,12 @@ export async function proxy(req: NextRequest) {
   }
 
   if (session && isAuthPage) {
-    console.log('Redirecting already authenticated user from /login to /home')
-    const redirectRes = NextResponse.redirect(new URL('/home', req.url))
+    console.log('Redirecting already authenticated user from /login to /dashboard')
+    const redirectRes = NextResponse.redirect(new URL('/dashboard', req.url))
     res.cookies.getAll().forEach((cookie) => {
       redirectRes.cookies.set(cookie.name, cookie.value)
     })
-    console.log('=== PROXY MIDDLEWARE END (REDIRECT TO HOME) ===')
+    console.log('=== PROXY MIDDLEWARE END (REDIRECT TO DASHBOARD) ===')
     return redirectRes
   }
 
@@ -77,5 +77,13 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/home/:path*', '/dashboard/:path*', '/journal/:path*', '/habits/:path*', '/insights/:path*', '/squad/:path*', '/login']
+  matcher: [
+    '/dashboard/:path*',
+    '/journal/:path*',
+    '/habits/:path*',
+    '/insights/:path*',
+    '/squad/:path*',
+    '/profile/:path*',
+    '/login'
+  ]
 }

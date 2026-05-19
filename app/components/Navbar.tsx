@@ -6,8 +6,8 @@ import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const navLinks = [
-  { name: 'Home',      path: '/home' },
   { name: 'Dashboard', path: '/dashboard' },
+  { name: 'Journal',   path: '/journal' },
   { name: 'Habits',    path: '/habits' },
   { name: 'AI Coach',  path: '/insights' },
   { name: 'Squad',     path: '/squad' },
@@ -63,7 +63,7 @@ export default function Navbar() {
 
         {/* Logo */}
         <button
-          onClick={() => router.push('/home')}
+          onClick={() => router.push('/dashboard')}
           className="flex items-center gap-2.5 flex-shrink-0 group"
         >
           <div className="w-7 h-7 rounded-lg bg-neutral-800 border border-neutral-700 flex items-center justify-center group-hover:border-neutral-500 transition-colors">
