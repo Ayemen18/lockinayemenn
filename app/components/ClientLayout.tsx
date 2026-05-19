@@ -40,6 +40,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       } else if (key === 's') {
         e.preventDefault()
         router.push('/habits')
+      } else if (key === 'i') {
+        e.preventDefault()
+        router.push('/insights')
       } else if (key === 'p') {
         e.preventDefault()
         router.push('/profile')
@@ -109,6 +112,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                 {[
                   { key: 'H', desc: 'Navigate to Home Overview' },
                   { key: 'D', desc: 'Navigate to Analytics Dashboard' },
+                  { key: 'I', desc: 'Navigate to AI Coach Insights' },
                   { key: 'C', desc: 'Open Daily Check-In Journal' },
                   { key: 'S', desc: 'Configure Habit Point Profiles' },
                   { key: 'P', desc: 'Edit User Settings / Profile' },

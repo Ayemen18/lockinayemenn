@@ -44,6 +44,7 @@ export default function Navbar() {
     { name: 'Home', path: '/home' },
     { name: 'Dashboard', path: '/dashboard' },
     { name: 'Habits', path: '/habits' },
+    { name: 'AI Coach', path: '/insights' },
   ]
 
   return (
