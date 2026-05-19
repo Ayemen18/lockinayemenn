@@ -219,7 +219,7 @@ export default function DashboardPage() {
             </div>
           </div>
           
-          <div className="grid gap-2" style={{ gridTemplateColumns: 'repeat(30, 1fr)' }}>
+          <div className="grid gap-1.5" style={{ gridTemplateColumns: 'repeat(30, 1fr)' }}>
             {last30.map(({ date, log }) => (
               <motion.div
                 key={date}
@@ -238,10 +238,10 @@ export default function DashboardPage() {
                 }}
                 style={{
                   aspectRatio: '1',
-                  borderRadius: '4px',
-                  background: log ? heatColor(log.score) : '#161616',
+                  borderRadius: '2px',
+                  background: log ? heatColor(log.score) : '#1f1f1f',
                   outline: date === today ? '1.5px solid #22c55e' : 'none',
-                  outlineOffset: '2px',
+                  outlineOffset: '1.5px',
                   transition: 'background 0.3s ease, outline-color 0.2s ease',
                 }}
               />
@@ -264,13 +264,19 @@ export default function DashboardPage() {
                       initial={{ height: 0 }}
                       animate={{ height: log ? `${log.score}%` : '3px' }}
                       transition={{ type: "spring", stiffness: 80, damping: 15 }}
-                      className={`w-full rounded-t-[3px] min-h-[3px] ${
-                        isToday 
-                          ? 'bg-white shadow-[0_0_12px_rgba(255,255,255,0.25)]' 
-                          : log 
-                          ? 'bg-neutral-800 border border-neutral-700/40' 
-                          : 'bg-neutral-950 border border-neutral-900'
-                      }`}
+                      style={{
+                        width: '100%',
+                        background: !log ? '#161616'
+                          : isToday ? '#22c55e'
+                          : log.score >= 90 ? '#16a34a'
+                          : log.score >= 75 ? '#4ade80'
+                          : log.score >= 60 ? '#bbf7d0'
+                          : '#166534',
+                        borderRadius: '3px 3px 0 0',
+                        minHeight: '3px',
+                        border: !log ? '1px solid #1f1f1f' : 'none',
+                        boxShadow: isToday ? '0 0 12px rgba(34, 197, 94, 0.4)' : 'none',
+                      }}
                     />
                   </div>
                   <span className="text-[10px] text-neutral-600 font-mono">{dayName}</span>

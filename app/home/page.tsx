@@ -155,8 +155,8 @@ export default function HomePage() {
 
         {/* Local Welcome block */}
         <FadeIn className="mb-8 border-b border-neutral-900 pb-5">
-          <p className="text-xs text-neutral-500 font-mono uppercase tracking-wider">{greeting}, {userName}</p>
-          <h1 className="text-2xl font-bold tracking-tight text-white mt-1">Dashboard</h1>
+          <p className="text-sm text-neutral-600 font-mono">{greeting},</p>
+          <h1 className="text-2xl font-semibold text-white mt-0.5 tracking-tight">{userName.split('@')[0]}</h1>
         </FadeIn>
 
         {/* Core Stats Stagger */}
@@ -237,7 +237,7 @@ export default function HomePage() {
             <p className="text-xs text-neutral-500 font-mono uppercase tracking-widest">Last 14 days</p>
             <p className="text-[10px] text-neutral-600 font-mono uppercase tracking-wider">{allLogs.length} days logged</p>
           </div>
-          <div className="grid gap-2" style={{ gridTemplateColumns: 'repeat(14, 1fr)' }}>
+          <div className="grid gap-1.5" style={{ gridTemplateColumns: 'repeat(14, 1fr)' }}>
             {last14.map(({ date, log }, i) => (
               <motion.div
                 key={date}
@@ -261,10 +261,10 @@ export default function HomePage() {
                   style={{
                     aspectRatio: '1',
                     width: '100%',
-                    borderRadius: '4px',
-                    background: log ? heatColor(log.score) : '#161616',
+                    borderRadius: '2px',
+                    background: log ? heatColor(log.score) : '#1f1f1f',
                     outline: date === today ? '1.5px solid #22c55e' : 'none',
-                    outlineOffset: '2px',
+                    outlineOffset: '1.5px',
                     transition: 'background 0.3s ease, outline-color 0.2s ease',
                   }}
                   title={log ? `${date}: ${log.score}% (Click to view)` : `${date} (Click to view)`}
