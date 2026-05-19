@@ -134,21 +134,28 @@ export default function Navbar() {
                 </motion.button>
               )}
 
-              <div className="flex items-center gap-2 pl-3 border-l border-neutral-800">
-                <div className="w-6 h-6 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center">
-                  <span className="text-xs text-neutral-400 font-mono">
-                    {userName.charAt(0).toUpperCase()}
+              <div className="flex items-center gap-3 pl-3 border-l border-neutral-800">
+                <button
+                  onClick={() => router.push('/profile')}
+                  className="flex items-center gap-2 group hover:opacity-80 transition-opacity"
+                  title="Profile Settings"
+                >
+                  <div className="w-6 h-6 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center group-hover:border-neutral-500 transition-colors">
+                    <span className="text-xs text-neutral-400 font-mono">
+                      {userName.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <span className="text-xs text-neutral-500 font-mono hidden lg:block group-hover:text-neutral-300 transition-colors">
+                    {userName}
                   </span>
-                </div>
-                <span className="text-xs text-neutral-500 font-mono hidden lg:block">
-                  {userName}
-                </span>
+                </button>
                 <button
                   onClick={async () => {
                     await supabase.auth.signOut()
                     router.push('/login')
                   }}
-                  className="text-xs text-neutral-700 hover:text-neutral-400 font-mono transition-colors ml-1"
+                  className="text-neutral-700 hover:text-red-400 text-xs font-mono transition-colors pl-1"
+                  title="Sign Out"
                 >
                   out
                 </button>

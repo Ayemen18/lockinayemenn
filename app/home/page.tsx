@@ -294,10 +294,10 @@ export default function HomePage() {
             full analytics →
           </button>
           <button
-            onClick={async () => { await supabase.auth.signOut(); router.push('/login') }}
-            className="text-xs text-neutral-600 hover:text-red-400 transition-colors duration-200 font-mono uppercase tracking-wider"
+            onClick={() => router.push('/profile')}
+            className="text-xs text-neutral-500 hover:text-neutral-300 transition-colors duration-200 font-mono uppercase tracking-wider"
           >
-            sign out
+            profile settings →
           </button>
         </FadeIn>
 
