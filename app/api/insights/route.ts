@@ -99,56 +99,61 @@ export async function POST() {
       baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
     })
 
-    const prompt = `You are a personal discipline coach analyzing someone's habit tracking data. Be direct, specific, and motivating — not generic.
+    const prompt = `You are a personal discipline coach. Analyze this data and write a complete coach report. Be direct and specific.
 
-Here are their habits and point values:
+Habits tracked:
 ${habits?.map(h => `- ${h.name} (${h.category}, ${h.points}pts)`).join('\n')}
 
-Here are their last ${logs.length} days of data (most recent first):
-${logs.map(l => `
-Date: ${l.date}
-Score: ${l.score}%
-Study hours: ${l.study_hours || 'not logged'}
-Sleep time: ${l.sleep_time || 'not logged'}
-Reflection: "${l.reflection || 'none'}"
-`).join('---')}
+Last ${logs.length} days (newest first):
+${logs.map(l => `${l.date}: ${l.score}% | study: ${l.study_hours || '?'}h | sleep: ${l.sleep_time || '?'} | note: "${l.reflection || 'none'}"`).join('\n')}
 
-Write a structured weekly coach report with exactly these sections:
+Write exactly these 5 sections, each with 2-3 sentences or items:
 
 **PERFORMANCE SUMMARY**
-2-3 sentences on overall performance. Be direct about whether this was a good or bad stretch.
+Overall assessment of this period.
 
 **WHAT'S WORKING**
-2-3 specific patterns from the data that are going well. Reference actual numbers.
+2-3 specific patterns going well with actual numbers.
 
 **BIGGEST BLOCKERS**
-2-3 specific things hurting the score. Reference actual dates or patterns.
+2-3 things hurting the score with specific dates/patterns.
 
 **THIS WEEK'S FOCUS**
-Exactly 3 action items, numbered, ultra-specific. Not generic advice — based on their actual data. Each one sentence.
+1. First action item
+2. Second action item  
+3. Third action item
 
 **COACH'S NOTE**
-1-2 sentences. Honest and direct. Something they need to hear.
-
-Keep the whole report under 400 words. No filler. Reference their actual data throughout.`
+One honest thing they need to hear.`
 
     let report = ''
     try {
       const completion = await client.chat.completions.create({
         model: 'gemini-2.5-flash',
-        max_tokens: 800,
+        max_tokens: 2000,
         messages: [{ role: 'user', content: prompt }],
       })
-      report = completion.choices[0]?.message?.content || ''
+      
+      const choice = completion.choices[0]
+      report = choice.message.content || ''
+
+      // If response was cut off, don't save truncated report
+      if (choice.finish_reason === 'length') {
+        return NextResponse.json({ 
+          error: 'Response was too long and got cut off. Try again.' 
+        }, { status: 500 })
+      }
+
+      if (!report || report.length < 100) {
+        return NextResponse.json({ 
+          error: 'Empty or too short response from AI. Try again.' 
+        }, { status: 500 })
+      }
     } catch (apiErr: any) {
       console.error('Google Gemini API call failed:', apiErr)
       return NextResponse.json({ 
         error: `Gemini API Error: ${apiErr.message || apiErr}` 
       }, { status: 502 })
-    }
-
-    if (!report) {
-      return NextResponse.json({ error: 'AI Coach failed to generate a report content.' }, { status: 502 })
     }
 
     const { error: upsertError } = await supabase.from('insights').upsert({
