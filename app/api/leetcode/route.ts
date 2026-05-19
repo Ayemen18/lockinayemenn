@@ -55,10 +55,8 @@ export async function GET(req: Request) {
     const user = data.data.matchedUser
     const recentSubmissions = data.data.recentAcSubmissionList || []
 
-    // Filter today's solved problems
-    const todayStart = new Date()
-    todayStart.setHours(0, 0, 0, 0)
-    const todayTimestamp = Math.floor(todayStart.getTime() / 1000)
+    // Filter problems solved in the last 24 hours (robust timezone-immune definition of "today")
+    const todayTimestamp = Math.floor(Date.now() / 1000) - 24 * 60 * 60
 
     const todaySolved = recentSubmissions.filter(
       (s: any) => parseInt(s.timestamp) >= todayTimestamp
@@ -67,23 +65,6 @@ export async function GET(req: Request) {
     // Remove duplicates (same problem solved multiple times)
     const uniqueTodaySolved = Array.from(
       new Map(todaySolved.map((s: any) => [s.titleSlug, s])).values()
-    )
-
-    // Filter this week's solved problems (Monday to Sunday)
-    const now = new Date()
-    const currentDay = now.getDay()
-    const distanceToMonday = currentDay === 0 ? -6 : 1 - currentDay
-    const mondayDate = new Date(now)
-    mondayDate.setDate(now.getDate() + distanceToMonday)
-    mondayDate.setHours(0, 0, 0, 0)
-    const weekTimestamp = Math.floor(mondayDate.getTime() / 1000)
-
-    const weekSolved = recentSubmissions.filter(
-      (s: any) => parseInt(s.timestamp) >= weekTimestamp
-    )
-
-    const uniqueWeekSolved = Array.from(
-      new Map(weekSolved.map((s: any) => [s.titleSlug, s])).values()
     )
 
     const stats = user.submitStats.acSubmissionNum
@@ -102,7 +83,6 @@ export async function GET(req: Request) {
       medium,
       hard,
       todaySolvedCount: uniqueTodaySolved.length,
-      weeklySolvedCount: uniqueWeekSolved.length,
       todayProblems: uniqueTodaySolved.map((s: any) => s.title),
     })
   } catch (err) {

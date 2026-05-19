@@ -17,8 +17,8 @@ type MemberStats = {
   studyHours: number | null
   consistency: number
   allTimeAvg: number
-  leetcodeSolvedWeek: number
   leetcodeSolvedToday: number
+  leetcodeTotalSolved: number | null
 }
 
 type Squad = {
@@ -184,9 +184,7 @@ function SquadContent() {
         const username = memberProfile?.leetcode_username
 
         let leetcodeSolvedToday = todayLog?.leetcode_solved || 0
-        const weekLeetcodeLogs = logs?.filter(l => l.date >= weekStart && l.date !== today) || []
-        const loggedWeekSolved = weekLeetcodeLogs.reduce((s, l) => s + (l.leetcode_solved || 0), 0)
-        let leetcodeSolvedWeek = loggedWeekSolved + leetcodeSolvedToday
+        let leetcodeTotalSolved: number | null = null
 
         if (username) {
           try {
@@ -194,9 +192,7 @@ function SquadContent() {
             const json = await res.json()
             if (json && !json.error) {
               leetcodeSolvedToday = json.todaySolvedCount || 0
-              if (json.weeklySolvedCount !== undefined) {
-                leetcodeSolvedWeek = Math.max(loggedWeekSolved + leetcodeSolvedToday, json.weeklySolvedCount)
-              }
+              leetcodeTotalSolved = json.totalSolved || null
               if (json.streak > streak) {
                 streak = json.streak
               }
@@ -216,8 +212,8 @@ function SquadContent() {
           studyHours: avgStudy ? parseFloat(avgStudy.toFixed(1)) : null,
           consistency,
           allTimeAvg,
-          leetcodeSolvedWeek,
           leetcodeSolvedToday,
+          leetcodeTotalSolved,
         }
       })
     )
@@ -673,12 +669,12 @@ function SquadContent() {
                     transition={{ duration: 0.2 }}
                   >
                     <p className="text-xs text-neutral-500 font-mono mb-4">
-                      Week of {weekStart} — ranked by problems solved
+                      TODAY'S LEETCODE BOARD — RANKED BY PROBLEMS SOLVED IN LAST 24 HOURS
                     </p>
 
                     <FadeInStagger className="space-y-3">
                       {[...memberStats]
-                        .sort((a, b) => b.leetcodeSolvedWeek - a.leetcodeSolvedWeek)
+                        .sort((a, b) => b.leetcodeSolvedToday - a.leetcodeSolvedToday)
                         .map((m, i) => (
                           <StaggerItem key={m.user_id}>
                             <div className={`flex items-center gap-4 bg-neutral-900 border rounded-2xl px-5 py-4 ${
@@ -701,8 +697,8 @@ function SquadContent() {
                                 <div className="w-full bg-neutral-850 rounded-full h-1 overflow-hidden">
                                   <motion.div
                                     initial={{ width: 0 }}
-                                    animate={{ width: Math.max(...memberStats.map(x => x.leetcodeSolvedWeek)) > 0
-                                      ? `${(m.leetcodeSolvedWeek / Math.max(...memberStats.map(x => x.leetcodeSolvedWeek || 1))) * 100}%`
+                                    animate={{ width: Math.max(...memberStats.map(x => x.leetcodeSolvedToday)) > 0
+                                      ? `${(m.leetcodeSolvedToday / Math.max(...memberStats.map(x => x.leetcodeSolvedToday || 1))) * 100}%`
                                       : '0%'
                                     }}
                                     transition={{ duration: 0.6, delay: i * 0.1 }}
@@ -716,25 +712,33 @@ function SquadContent() {
                               </div>
 
                               <div className="text-right ml-4">
-                                <div className="text-2xl font-bold text-white tracking-tight">{m.leetcodeSolvedWeek}</div>
-                                <div className="text-[9px] text-neutral-500 font-mono uppercase tracking-wider mt-0.5">this week</div>
+                                <div className="text-2xl font-bold text-white tracking-tight">{m.leetcodeSolvedToday}</div>
+                                <div className="text-[9px] text-neutral-500 font-mono uppercase tracking-wider mt-0.5">solved today</div>
                               </div>
 
                               <div className="text-right ml-4 border-l border-neutral-850 pl-4">
-                                <div className={`text-lg font-bold ${m.leetcodeSolvedToday > 0 ? 'text-green-400' : 'text-neutral-700'}`}>
-                                  {m.leetcodeSolvedToday}
+                                <div className="text-lg font-bold text-neutral-300 font-mono">
+                                  {m.leetcodeTotalSolved !== null ? m.leetcodeTotalSolved : '—'}
                                 </div>
-                                <div className="text-[9px] text-neutral-650 font-mono uppercase mt-0.5">today</div>
+                                <div className="text-[9px] text-neutral-650 font-mono uppercase mt-0.5">all-time</div>
+                              </div>
+
+                              <div className="text-right ml-4 border-l border-neutral-850 pl-4 min-w-[70px]">
+                                <div className="text-lg font-bold text-white font-mono flex items-center justify-end gap-1">
+                                  {m.streak}
+                                  <span className="text-xs">🔥</span>
+                                </div>
+                                <div className="text-[9px] text-neutral-650 font-mono uppercase mt-0.5">streak</div>
                               </div>
                             </div>
                           </StaggerItem>
                         ))}
                     </FadeInStagger>
 
-                    {memberStats.every(m => m.leetcodeSolvedWeek === 0) && (
+                    {memberStats.every(m => m.leetcodeSolvedToday === 0) && (
                       <div className="bg-neutral-900 border border-neutral-800/60 border-dashed rounded-2xl p-12 text-center mt-4">
                         <p className="text-2xl mb-2">⌨️</p>
-                        <p className="text-sm text-white font-medium mb-1">No LeetCode activity yet</p>
+                        <p className="text-sm text-white font-medium mb-1">No LeetCode activity today</p>
                         <p className="text-xs text-neutral-600 font-mono">
                           Solve problems and sync LeetCode in your profile to appear here.
                         </p>
