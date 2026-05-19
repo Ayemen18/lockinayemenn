@@ -92,6 +92,12 @@ export default function JournalPage() {
     })
   }
 
+  function resetAll() {
+    setChecked(new Set())
+    setLeetcodeSolved(0)
+    setLeetcodeBonus(0)
+  }
+
   function handleLeetCodeSync(solvedToday: number) {
     setLeetcodeSolved(solvedToday)
 
@@ -120,10 +126,6 @@ export default function JournalPage() {
     : 0
 
   async function save() {
-    if (checked.size === 0) {
-      alert('Check at least one habit before saving.')
-      return
-    }
     setSaving(true)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
@@ -183,6 +185,27 @@ export default function JournalPage() {
                   {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
                 </p>
               </div>
+              
+              {/* Reset Button */}
+              <AnimatePresence>
+                {checked.size > 0 && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    whileHover={{ scale: 1.02, backgroundColor: 'rgba(239, 68, 68, 0.08)', borderColor: 'rgba(239, 68, 68, 0.3)' }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={resetAll}
+                    className="px-3.5 py-1.5 rounded-xl border border-neutral-800 bg-neutral-900/50 text-neutral-400 hover:text-red-400 font-mono text-[11px] uppercase tracking-wider transition-all duration-200 flex items-center gap-2 cursor-pointer"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                      <path d="M3 3v5h5" />
+                    </svg>
+                    Reset All
+                  </motion.button>
+                )}
+              </AnimatePresence>
             </FadeIn>
 
             {/* Checklist items */}
