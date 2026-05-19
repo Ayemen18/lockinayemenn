@@ -1,10 +1,31 @@
 import OpenAI from 'openai'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { createServerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
 export async function POST() {
-  const supabase = createRouteHandlerClient({ cookies })
+  const cookieStore = await cookies()
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            )
+          } catch (err) {
+            console.error('Error in Supabase server client cookie setter:', err)
+          }
+        },
+      },
+    }
+  )
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -29,12 +50,13 @@ export async function POST() {
   const weekEnd = logs[0].date
   const avgScore = Math.round(logs.reduce((s, l) => s + l.score, 0) / logs.length)
 
+  // Use maybeSingle to prevent PGRST116 single() crash on empty selection
   const { data: existing } = await supabase
     .from('insights')
     .select('*')
     .eq('user_id', user.id)
     .eq('week_start', weekStart)
-    .single()
+    .maybeSingle()
 
   if (existing) {
     return NextResponse.json({ report: existing.report, cached: true })
