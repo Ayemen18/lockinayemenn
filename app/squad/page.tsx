@@ -320,6 +320,38 @@ function SquadContent() {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  async function leaveSquad() {
+    if (!activeSquad || !user) return
+    const confirmLeave = window.confirm(`Are you sure you want to leave the squad "${activeSquad.name}"?`)
+    if (!confirmLeave) return
+
+    try {
+      const { error: leaveErr } = await supabase
+        .from('squad_members')
+        .delete()
+        .eq('squad_id', activeSquad.id)
+        .eq('user_id', user.id)
+
+      if (leaveErr) {
+        alert('Failed to leave squad: ' + leaveErr.message)
+        return
+      }
+
+      // Update state
+      const updatedSquads = squads.filter(s => s.id !== activeSquad.id)
+      setSquads(updatedSquads)
+      if (updatedSquads.length > 0) {
+        setActiveSquad(updatedSquads[0])
+        await loadMemberStats(updatedSquads[0].id, user.id, true)
+      } else {
+        setActiveSquad(null)
+        setMemberStats([])
+      }
+    } catch (err: any) {
+      alert('Error leaving squad: ' + err.message)
+    }
+  }
+
   const weeklyRanking = [...memberStats].sort((a, b) => b.weekAvg - a.weekAvg)
 
   return (
@@ -461,6 +493,13 @@ function SquadContent() {
                   className="text-xs font-mono text-neutral-400 hover:text-white bg-neutral-900 border border-neutral-800/80 px-3.5 py-2 rounded-xl transition-colors"
                 >
                   {copied ? '✓ COPIED' : 'INVITE LINK'}
+                </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.96 }}
+                  onClick={leaveSquad}
+                  className="text-xs font-mono text-red-500 hover:text-red-400 bg-red-950/20 border border-red-900/30 px-3.5 py-2 rounded-xl transition-colors font-medium"
+                >
+                  LEAVE SQUAD
                 </motion.button>
               </div>
             </FadeIn>
