@@ -115,9 +115,13 @@ export default function HabitsPage() {
     
     setSaving(true)
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
+    if (!user) {
+      alert('User is not authenticated. Please log in.')
+      setSaving(false)
+      return
+    }
 
-    await supabase.from('habits').insert({
+    const { error } = await supabase.from('habits').insert({
       user_id: user.id,
       name: form.name.trim(),
       category: finalCategory,
@@ -125,10 +129,17 @@ export default function HabitsPage() {
       sort_order: habits.length + 1,
     })
 
+    if (error) {
+      alert(`Failed to save habit: ${error.message}`)
+      setSaving(false)
+      return
+    }
+
     setForm(empty)
     setIsCustomCategory(false)
     setCustomCategoryText('')
     setSaving(false)
+    setActiveTab('all')
     load()
   }
 
@@ -142,22 +153,33 @@ export default function HabitsPage() {
     
     setSaving(true)
 
-    await supabase.from('habits').update({
+    const { error } = await supabase.from('habits').update({
       name: form.name.trim(),
       category: finalCategory,
       points: form.points,
     }).eq('id', id)
+
+    if (error) {
+      alert(`Failed to update habit: ${error.message}`)
+      setSaving(false)
+      return
+    }
 
     setEditingId(null)
     setForm(empty)
     setIsCustomCategory(false)
     setCustomCategoryText('')
     setSaving(false)
+    setActiveTab('all')
     load()
   }
 
   async function deleteHabit(id: string) {
-    await supabase.from('habits').delete().eq('id', id)
+    const { error } = await supabase.from('habits').delete().eq('id', id)
+    if (error) {
+      alert(`Failed to delete habit: ${error.message}`)
+      return
+    }
     // Reset form if we were editing this specific habit
     if (editingId === id) {
       setEditingId(null)

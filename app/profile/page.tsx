@@ -138,17 +138,38 @@ export default function ProfilePage() {
 
       {/* Danger zone */}
       <FadeIn delay={0.2}>
-        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5">
-          <p className="text-xs text-neutral-600 font-mono uppercase tracking-widest mb-4">Session</p>
-          <button
-            onClick={async () => {
-              await supabase.auth.signOut()
-              router.push('/login')
-            }}
-            className="text-sm text-red-400 hover:text-red-300 transition-colors font-mono"
-          >
-            Sign out
-          </button>
+        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 space-y-4">
+          <div>
+            <p className="text-xs text-neutral-600 font-mono uppercase tracking-widest mb-3">Database actions</p>
+            <button
+              onClick={async () => {
+                if (window.confirm("Are you sure you want to clear all your habits and daily logs? This cannot be undone.")) {
+                  const { data: { user } } = await supabase.auth.getUser()
+                  if (!user) return
+                  await supabase.from('daily_logs').delete().eq('user_id', user.id)
+                  await supabase.from('habits').delete().eq('user_id', user.id)
+                  alert("Demo data cleared successfully!")
+                  window.location.reload()
+                }
+              }}
+              className="text-xs text-red-500 hover:text-red-400 border border-red-900/40 hover:border-red-800 bg-red-950/20 px-3 py-1.5 rounded-lg transition-colors font-mono uppercase tracking-wider cursor-pointer"
+            >
+              Clear Demo & User Data
+            </button>
+          </div>
+
+          <div className="pt-3 border-t border-neutral-800/60">
+            <p className="text-xs text-neutral-600 font-mono uppercase tracking-widest mb-3">Session</p>
+            <button
+              onClick={async () => {
+                await supabase.auth.signOut()
+                router.push('/login')
+              }}
+              className="text-sm text-neutral-500 hover:text-neutral-350 transition-colors font-mono cursor-pointer"
+            >
+              Sign out
+            </button>
+          </div>
         </div>
       </FadeIn>
 
