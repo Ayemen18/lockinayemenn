@@ -116,8 +116,8 @@ export default function DashboardPage() {
     if (score === 0) return '#161616'
     if (score >= 90) return '#22c55e'
     if (score >= 75) return '#4ade80'
-    if (score >= 60) return '#bbf7d0'
-    return '#166534'
+    if (score >= 60) return '#86efac'
+    return '#3f6212'
   }
 
   const sleepInsight = (() => {

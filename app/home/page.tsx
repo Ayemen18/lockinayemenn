@@ -109,10 +109,17 @@ export default function HomePage() {
     ? quotes.find(q => todayLog.score >= q.min)?.text
     : notLoggedQuotes[new Date().getDay() % notLoggedQuotes.length]
 
+  const toLocalDate = (date: Date): string => {
+    const y = date.getFullYear()
+    const m = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${y}-${m}-${day}`
+  }
+
   const last14 = Array.from({ length: 14 }, (_, i) => {
     const d = new Date()
     d.setDate(d.getDate() - (13 - i))
-    const dateStr = d.toISOString().split('T')[0]
+    const dateStr = toLocalDate(d)
     return { date: dateStr, log: allLogs.find(l => l.date === dateStr) }
   })
 
@@ -120,8 +127,8 @@ export default function HomePage() {
     if (score === 0) return '#161616'
     if (score >= 90) return '#22c55e'
     if (score >= 75) return '#4ade80'
-    if (score >= 60) return '#bbf7d0'
-    return '#166534'
+    if (score >= 60) return '#86efac'
+    return '#3f6212'
   }
 
   if (loading) {
