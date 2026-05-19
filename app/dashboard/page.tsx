@@ -7,6 +7,7 @@ import { motion } from 'framer-motion'
 import { FadeIn, FadeInStagger, StaggerItem } from '../components/FadeIn'
 import HistoryModal from '../components/HistoryModal'
 import type { Log } from '../types'
+import { calculateStreak } from '../lib/streak'
 
 export default function DashboardPage() {
   const supabase = createBrowserClient(
@@ -87,27 +88,7 @@ export default function DashboardPage() {
   const avgScore = logs.length > 0
     ? Math.round(logs.reduce((s, l) => s + l.score, 0) / logs.length) : 0
 
-  const streak = (() => {
-    let count = 0
-    const d = new Date()
-    
-    // Grace period: if today is not logged yet, evaluate starting from yesterday
-    const todayStr = d.toISOString().split('T')[0]
-    const todayEntry = logs.find(l => l.date === todayStr)
-    if (!todayEntry) {
-      d.setDate(d.getDate() - 1)
-    }
-    
-    while (true) {
-      const dateStr = d.toISOString().split('T')[0]
-      const entry = logs.find(l => l.date === dateStr)
-      if (entry && entry.score > 0) {
-        count++
-        d.setDate(d.getDate() - 1)
-      } else break
-    }
-    return count
-  })()
+  const streak = calculateStreak(logs)
 
   const last30 = Array.from({ length: 30 }, (_, i) => {
     const d = new Date()

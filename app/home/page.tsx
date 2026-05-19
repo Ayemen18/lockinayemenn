@@ -7,6 +7,7 @@ import { motion } from 'framer-motion'
 import { FadeIn, FadeInStagger, StaggerItem } from '../components/FadeIn'
 import HistoryModal from '../components/HistoryModal'
 import type { Log } from '../types'
+import { calculateStreak } from '../lib/streak'
 
 const quotes = [
   { min: 90, text: "Elite execution. You're building something real." },
@@ -69,30 +70,7 @@ export default function HomePage() {
           const todayEntry = logs.find((l: Log) => l.date === today)
           if (todayEntry) setTodayLog(todayEntry)
 
-          let count = 0
-          const d = new Date()
-          
-          // Grace period: if today is not logged yet, start checking from yesterday
-          const localDate = (date: Date) => {
-            const tzOffset = date.getTimezoneOffset()
-            const local = new Date(date.getTime() - tzOffset * 60 * 1000)
-            return local.toISOString().split('T')[0]
-          }
-          const todayStr = localDate(d)
-          const streakTodayEntry = logs.find((l: Log) => l.date === todayStr)
-          if (!streakTodayEntry) {
-            d.setDate(d.getDate() - 1)
-          }
-          
-          while (true) {
-            const dateStr = localDate(d)
-            const entry = logs.find((l: Log) => l.date === dateStr)
-            if (entry && entry.score > 0) {
-              count++
-              d.setDate(d.getDate() - 1)
-            } else break
-          }
-          setStreak(count)
+          setStreak(calculateStreak(logs))
         }
       } catch (err) {
         console.error("Error loading home page data:", err)

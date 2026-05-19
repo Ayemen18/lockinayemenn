@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FadeIn, FadeInStagger, StaggerItem } from '../components/FadeIn'
+import { calculateStreak } from '../lib/streak'
 
 type MemberStats = {
   user_id: string
@@ -54,8 +55,13 @@ function SquadContent() {
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
 
-  const offset = new Date().getTimezoneOffset()
-  const today = new Date(Date.now() - offset * 60 * 1000).toISOString().split('T')[0]
+  const today = (() => {
+    const d = new Date()
+    const y = d.getFullYear()
+    const m = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${y}-${m}-${day}`
+  })()
 
   // Get Monday of current week
   const weekStart = (() => {
@@ -145,21 +151,7 @@ function SquadContent() {
         const weekLogs = logs?.filter(l => l.date >= weekStart) || []
         const allLogs = logs || []
 
-        // Streak — use local date to match how logs are saved
-        let streak = 0
-        const d = new Date()
-        const localDate = (date: Date) => {
-          const offset = date.getTimezoneOffset()
-          const local = new Date(date.getTime() - offset * 60 * 1000)
-          return local.toISOString().split('T')[0]
-        }
-        while (true) {
-          const dateStr = localDate(d)
-          if (allLogs.find(l => l.date === dateStr)) {
-            streak++
-            d.setDate(d.getDate() - 1)
-          } else break
-        }
+        const streak = calculateStreak(allLogs)
 
         const weekAvg = weekLogs.length > 0
           ? Math.round(weekLogs.reduce((s, l) => s + l.score, 0) / weekLogs.length)
