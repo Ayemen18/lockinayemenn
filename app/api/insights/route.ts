@@ -137,13 +137,6 @@ One honest thing they need to hear.`
       const choice = completion.choices[0]
       report = choice.message.content || ''
 
-      // If response was cut off, don't save truncated report
-      if (choice.finish_reason === 'length') {
-        return NextResponse.json({ 
-          error: 'Response was too long and got cut off. Try again.' 
-        }, { status: 500 })
-      }
-
       if (!report || report.length < 100) {
         return NextResponse.json({ 
           error: 'Empty or too short response from AI. Try again.' 
