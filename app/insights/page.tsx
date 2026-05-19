@@ -263,7 +263,7 @@ export default function InsightsPage() {
           )}
 
           {/* Active report container */}
-          <div className={insights.length > 0 ? 'col-span-2' : 'col-span-3'}>
+          <div className={`${insights.length > 0 ? 'col-span-2' : 'col-span-3'} min-h-0`}>
             <AnimatePresence mode="wait">
               {activeReport ? (
                 <motion.div
@@ -272,7 +272,7 @@ export default function InsightsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.25 }}
-                  className="bg-neutral-900 border border-neutral-800/80 rounded-2xl p-6 shadow-xl"
+                  className="bg-neutral-900 border border-neutral-800/80 rounded-2xl p-6 shadow-xl overflow-visible"
                 >
                   <div className="flex items-center justify-between mb-6 pb-4 border-b border-neutral-800/60">
                     <div>
@@ -291,7 +291,7 @@ export default function InsightsPage() {
                     </div>
                   </div>
 
-                  <div className="font-sans">
+                  <div className="prose prose-invert max-w-none overflow-visible font-sans">
                     {formatReport(activeReport.report)}
                   </div>
                 </motion.div>
