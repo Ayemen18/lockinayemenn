@@ -83,6 +83,10 @@ export default function JournalPage() {
   const score = totalPoints > 0 ? Math.round((earnedPoints / totalPoints) * 100) : 0
 
   async function save() {
+    if (checked.size === 0) {
+      alert('Check at least one habit before saving.')
+      return
+    }
     setSaving(true)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
