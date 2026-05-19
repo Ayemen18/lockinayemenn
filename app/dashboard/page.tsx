@@ -8,6 +8,7 @@ import { FadeIn, FadeInStagger, StaggerItem } from '../components/FadeIn'
 import HistoryModal from '../components/HistoryModal'
 import type { Log } from '../types'
 import { calculateStreak } from '../lib/streak'
+import LeetCodeCard from '../components/LeetCodeCard'
 
 export default function DashboardPage() {
   const supabase = createBrowserClient(
@@ -318,6 +319,11 @@ export default function DashboardPage() {
             </div>
           </FadeIn>
         )}
+
+        {/* LeetCode integration */}
+        <FadeIn delay={0.28} className="mb-6">
+          <LeetCodeCard />
+        </FadeIn>
 
         {/* Reflections Section */}
         <FadeIn delay={0.3} className="space-y-3">

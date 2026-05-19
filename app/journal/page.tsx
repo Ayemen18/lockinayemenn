@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FadeIn, FadeInStagger, StaggerItem } from '../components/FadeIn'
+import LeetCodeCard from '../components/LeetCodeCard'
 
 type Habit = {
   id: string
@@ -36,6 +37,7 @@ export default function JournalPage() {
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(true)
   const [alreadySaved, setAlreadySaved] = useState(false)
+  const [leetcodeHabitId, setLeetcodeHabitId] = useState<string | null>(null)
 
   const today = (() => {
     const d = new Date()
@@ -53,7 +55,13 @@ export default function JournalPage() {
       const { data: habitsData } = await supabase
         .from('habits').select('*').eq('user_id', user.id).order('sort_order')
 
-      if (habitsData) setHabits(habitsData)
+      if (habitsData) {
+        setHabits(habitsData)
+        const lcHabit = habitsData.find((h: Habit) =>
+          h.name.toLowerCase().includes('leetcode')
+        )
+        if (lcHabit) setLeetcodeHabitId(lcHabit.id)
+      }
 
       const { data: existingLog } = await supabase
         .from('daily_logs').select('*').eq('user_id', user.id).eq('date', today).maybeSingle()
@@ -76,6 +84,16 @@ export default function JournalPage() {
       next.has(id) ? next.delete(id) : next.add(id)
       return next
     })
+  }
+
+  function handleLeetCodeSync(solvedToday: number) {
+    if (solvedToday > 0 && leetcodeHabitId) {
+      setChecked(prev => {
+        const next = new Set(prev)
+        next.add(leetcodeHabitId)
+        return next
+      })
+    }
   }
 
   const totalPoints = habits.reduce((s, h) => s + h.points, 0)
@@ -227,6 +245,13 @@ export default function JournalPage() {
           {/* Right Column (1/3 width) - Sticky Inputs Console */}
           <div className="space-y-6 lg:sticky lg:top-24">
             
+            {/* LeetCode Card auto-sync status */}
+            {leetcodeHabitId && (
+              <FadeIn className="mb-5">
+                <LeetCodeCard onTodaySolved={handleLeetCodeSync} />
+              </FadeIn>
+            )}
+
             {/* Score & Save Console Card */}
             <FadeIn delay={0.1} className="bg-neutral-900 border border-neutral-800/80 rounded-2xl p-5 space-y-5">
               
