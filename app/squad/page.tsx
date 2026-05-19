@@ -17,6 +17,8 @@ type MemberStats = {
   studyHours: number | null
   consistency: number
   allTimeAvg: number
+  leetcodeSolvedWeek: number
+  leetcodeSolvedToday: number
 }
 
 type Squad = {
@@ -45,7 +47,7 @@ function SquadContent() {
   const [loading, setLoading] = useState(true)
   const [statsLoading, setStatsLoading] = useState(false)
 
-  const [view, setView] = useState<'daily' | 'weekly'>('daily')
+  const [view, setView] = useState<'daily' | 'weekly' | 'leetcode'>('daily')
   const [showCreate, setShowCreate] = useState(false)
   const [showJoin, setShowJoin] = useState(false)
   const [squadName, setSquadName] = useState('')
@@ -142,7 +144,7 @@ function SquadContent() {
       members.map(async (member) => {
         const { data: logs } = await supabase
           .from('daily_logs')
-          .select('date, score, study_hours')
+          .select('date, score, study_hours, leetcode_solved')
           .eq('user_id', member.user_id)
           .order('date', { ascending: false })
           .limit(30)
@@ -170,6 +172,10 @@ function SquadContent() {
           ? recentStudy.reduce((s, l) => s + (l.study_hours || 0), 0) / recentStudy.length
           : null
 
+        const weekLeetcode = logs?.filter(l => l.date >= weekStart) || []
+        const leetcodeSolvedWeek = weekLeetcode.reduce((s, l) => s + (l.leetcode_solved || 0), 0)
+        const leetcodeSolvedToday = todayLog?.leetcode_solved || 0
+
         return {
           user_id: member.user_id,
           display_name: member.display_name,
@@ -180,6 +186,8 @@ function SquadContent() {
           studyHours: avgStudy ? parseFloat(avgStudy.toFixed(1)) : null,
           consistency,
           allTimeAvg,
+          leetcodeSolvedWeek,
+          leetcodeSolvedToday,
         }
       })
     )
@@ -204,30 +212,28 @@ function SquadContent() {
 
     const code = generateCode()
 
-    const { data: squad, error: squadError } = await supabase
+    const { data: squad, error: squadErr } = await supabase
       .from('squads')
       .insert({ name: squadName.trim(), code, created_by: user.id })
       .select()
       .single()
 
-    if (squadError || !squad) {
-      setError('Failed to create squad. Try again.')
-      setSaving(false)
+    if (squadErr || !squad) {
+      setError('Failed to create squad.')
+      setSaving(true)
       return
     }
 
-    await supabase.from('squad_members').insert({
-      squad_id: squad.id,
-      user_id: user.id,
-      display_name: displayName.trim(),
-    })
+    await supabase
+      .from('squad_members')
+      .insert({ squad_id: squad.id, user_id: user.id, display_name: displayName.trim() })
 
     setSquads(prev => [...prev, squad])
     setActiveSquad(squad)
-    await loadMemberStats(squad.id, user.id, true)
     setShowCreate(false)
-    setSquadName('')
     setSaving(false)
+    setSquadName('')
+    await loadMemberStats(squad.id, user.id, true)
   }
 
   async function joinSquad() {
@@ -242,31 +248,41 @@ function SquadContent() {
       .maybeSingle()
 
     if (!squad) {
-      setError('Invalid code. Check with your friend.')
+      setError('Squad code not found.')
       setSaving(false)
       return
     }
 
-    const { error: joinError } = await supabase
+    const { data: existing } = await supabase
       .from('squad_members')
-      .insert({
-        squad_id: squad.id,
-        user_id: user.id,
-        display_name: displayName.trim(),
-      })
+      .select('*')
+      .eq('squad_id', squad.id)
+      .eq('user_id', user.id)
+      .maybeSingle()
 
-    if (joinError) {
-      setError('Already in this squad or something went wrong.')
+    if (existing) {
+      setError("You're already in this squad.")
       setSaving(false)
       return
     }
+
+    await supabase
+      .from('squad_members')
+      .insert({ squad_id: squad.id, user_id: user.id, display_name: displayName.trim() })
 
     setSquads(prev => [...prev, squad])
     setActiveSquad(squad)
-    await loadMemberStats(squad.id, user.id, true)
     setShowJoin(false)
-    setJoinCode('')
     setSaving(false)
+    setJoinCode('')
+    await loadMemberStats(squad.id, user.id, true)
+  }
+
+  function copyCode() {
+    if (!activeSquad) return
+    navigator.clipboard.writeText(activeSquad.code)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   function copyInviteLink() {
@@ -277,26 +293,7 @@ function SquadContent() {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  function copyCode() {
-    if (!activeSquad) return
-    navigator.clipboard.writeText(activeSquad.code)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
   const weeklyRanking = [...memberStats].sort((a, b) => b.weekAvg - a.weekAvg)
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <motion.div
-          animate={{ opacity: [0.3, 1, 0.3] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          className="text-sm text-neutral-700 font-mono"
-        >loading...</motion.div>
-      </div>
-    )
-  }
 
   return (
     <div className="text-neutral-100 font-sans">
@@ -328,13 +325,13 @@ function SquadContent() {
         <AnimatePresence>
           {(showCreate || showJoin) && (
             <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              className="bg-neutral-900 border border-neutral-800/80 rounded-2xl p-6 mb-6 shadow-xl"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="bg-neutral-950 border border-neutral-900 rounded-2xl p-5 mb-6 overflow-hidden"
             >
-              <p className="text-xs text-neutral-500 font-mono uppercase tracking-widest mb-4">
-                {showCreate ? 'Create a new squad' : 'Join a squad'}
+              <p className="text-xs text-neutral-500 font-mono uppercase tracking-widest mb-3">
+                {showCreate ? 'Create new squad' : 'Join a squad'}
               </p>
 
               {showCreate && (
@@ -443,7 +440,7 @@ function SquadContent() {
 
             {/* View toggle */}
             <FadeIn className="flex gap-1 bg-neutral-900 border border-neutral-800/60 rounded-xl p-1 w-fit mb-6">
-              {(['daily', 'weekly'] as const).map(v => (
+              {(['daily', 'weekly', 'leetcode'] as const).map(v => (
                 <button
                   key={v}
                   onClick={() => setView(v)}
@@ -453,7 +450,7 @@ function SquadContent() {
                       : 'text-neutral-500 hover:text-white'
                   }`}
                 >
-                  {v === 'daily' ? "Today's board" : 'Weekly ranking'}
+                  {v === 'daily' ? "Today's board" : v === 'weekly' ? 'Weekly ranking' : '⌨️ LeetCode'}
                 </button>
               ))}
             </FadeIn>
@@ -468,7 +465,7 @@ function SquadContent() {
               </div>
             ) : (
               <AnimatePresence mode="wait">
-                {view === 'daily' ? (
+                {view === 'daily' && (
                   <motion.div
                     key="daily"
                     initial={{ opacity: 0, x: -8 }}
@@ -556,7 +553,9 @@ function SquadContent() {
                       ))}
                     </FadeInStagger>
                   </motion.div>
-                ) : (
+                )}
+
+                {view === 'weekly' && (
                   <motion.div
                     key="weekly"
                     initial={{ opacity: 0, x: 8 }}
@@ -632,6 +631,85 @@ function SquadContent() {
                         </StaggerItem>
                       ))}
                     </FadeInStagger>
+                  </motion.div>
+                )}
+
+                {view === 'leetcode' && (
+                  <motion.div
+                    key="leetcode"
+                    initial={{ opacity: 0, x: 8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -8 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <p className="text-xs text-neutral-600 font-mono mb-4">
+                      Week of {weekStart} — ranked by problems solved
+                    </p>
+
+                    <FadeInStagger className="space-y-3">
+                      {[...memberStats]
+                        .sort((a, b) => b.leetcodeSolvedWeek - a.leetcodeSolvedWeek)
+                        .map((m, i) => (
+                          <StaggerItem key={m.user_id}>
+                            <div className={`flex items-center gap-4 bg-neutral-900 border rounded-2xl px-5 py-4 ${
+                              m.user_id === user?.id ? 'border-neutral-600 shadow-md' : 'border-neutral-800/80'
+                            }`}>
+                              <div className={`text-2xl font-bold w-8 text-center ${
+                                i === 0 ? 'text-yellow-400' :
+                                i === 1 ? 'text-neutral-400' :
+                                i === 2 ? 'text-orange-600' :
+                                'text-neutral-700'
+                              }`}>{i + 1}</div>
+
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <p className="text-sm font-semibold text-white">{m.display_name}</p>
+                                  {m.user_id === user?.id && (
+                                    <span className="text-[10px] text-neutral-600 font-mono uppercase">you</span>
+                                  )}
+                                </div>
+                                <div className="w-full bg-neutral-850 rounded-full h-1 overflow-hidden">
+                                  <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: memberStats[0]?.leetcodeSolvedWeek > 0
+                                      ? `${(m.leetcodeSolvedWeek / Math.max(...memberStats.map(x => x.leetcodeSolvedWeek || 1))) * 100}%`
+                                      : '0%'
+                                    }}
+                                    transition={{ duration: 0.6, delay: i * 0.1 }}
+                                    className={`h-full rounded-full ${
+                                      i === 0 ? 'bg-yellow-500' :
+                                      i === 1 ? 'bg-neutral-400' :
+                                      'bg-neutral-600'
+                                    }`}
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="text-right ml-4">
+                                <div className="text-2xl font-bold text-white tracking-tight">{m.leetcodeSolvedWeek}</div>
+                                <div className="text-[9px] text-neutral-500 font-mono uppercase tracking-wider mt-0.5">this week</div>
+                              </div>
+
+                              <div className="text-right ml-4 border-l border-neutral-850 pl-4">
+                                <div className={`text-lg font-bold ${m.leetcodeSolvedToday > 0 ? 'text-green-400' : 'text-neutral-700'}`}>
+                                  {m.leetcodeSolvedToday}
+                                </div>
+                                <div className="text-[9px] text-neutral-650 font-mono uppercase mt-0.5">today</div>
+                              </div>
+                            </div>
+                          </StaggerItem>
+                        ))}
+                    </FadeInStagger>
+
+                    {memberStats.every(m => m.leetcodeSolvedWeek === 0) && (
+                      <div className="bg-neutral-900 border border-neutral-800/60 border-dashed rounded-2xl p-12 text-center mt-4">
+                        <p className="text-2xl mb-2">⌨️</p>
+                        <p className="text-sm text-white font-medium mb-1">No LeetCode activity yet</p>
+                        <p className="text-xs text-neutral-600 font-mono">
+                          Solve problems and sync LeetCode in your profile to appear here.
+                        </p>
+                      </div>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>

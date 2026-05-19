@@ -39,6 +39,10 @@ export default function JournalPage() {
   const [alreadySaved, setAlreadySaved] = useState(false)
   const [leetcodeHabitId, setLeetcodeHabitId] = useState<string | null>(null)
 
+  // LeetCode Solved & Bonus States
+  const [leetcodeSolved, setLeetcodeSolved] = useState(0)
+  const [leetcodeBonus, setLeetcodeBonus] = useState(0)
+
   const today = (() => {
     const d = new Date()
     const y = d.getFullYear()
@@ -72,6 +76,8 @@ export default function JournalPage() {
         setStudyHours(existingLog.study_hours?.toString() || '')
         setSleepTime(existingLog.sleep_time || '')
         setReflection(existingLog.reflection || '')
+        setLeetcodeSolved(existingLog.leetcode_solved || 0)
+        setLeetcodeBonus(existingLog.leetcode_bonus_points || 0)
       }
       setLoading(false)
     }
@@ -87,6 +93,15 @@ export default function JournalPage() {
   }
 
   function handleLeetCodeSync(solvedToday: number) {
+    setLeetcodeSolved(solvedToday)
+
+    // Bonus points: 5 base + 2 per extra problem, capped at 20
+    const bonus = solvedToday > 0
+      ? Math.min(5 + (solvedToday - 1) * 2, 20)
+      : 0
+    setLeetcodeBonus(bonus)
+
+    // Auto-check LeetCode habit if exists
     if (solvedToday > 0 && leetcodeHabitId) {
       setChecked(prev => {
         const next = new Set(prev)
@@ -98,7 +113,11 @@ export default function JournalPage() {
 
   const totalPoints = habits.reduce((s, h) => s + h.points, 0)
   const earnedPoints = habits.filter(h => checked.has(h.id)).reduce((s, h) => s + h.points, 0)
-  const score = totalPoints > 0 ? Math.round((earnedPoints / totalPoints) * 100) : 0
+  const totalWithBonus = totalPoints + (leetcodeSolved > 0 ? 20 : 0) // max possible
+  const earnedWithBonus = earnedPoints + leetcodeBonus
+  const score = totalWithBonus > 0
+    ? Math.round((earnedWithBonus / totalWithBonus) * 100)
+    : 0
 
   async function save() {
     if (checked.size === 0) {
@@ -110,17 +129,22 @@ export default function JournalPage() {
     if (!user) return
 
     await supabase.from('daily_logs').upsert({
-      user_id: user.id, date: today,
+      user_id: user.id,
+      date: today,
       completed_habit_ids: Array.from(checked),
-      total_points: totalPoints, earned_points: earnedPoints, score,
+      total_points: totalWithBonus,
+      earned_points: earnedWithBonus,
+      score,
       study_hours: parseFloat(studyHours) || null,
       sleep_time: sleepTime || null,
       reflection: reflection || null,
+      leetcode_solved: leetcodeSolved,
+      leetcode_bonus_points: leetcodeBonus,
     }, { onConflict: 'user_id,date' })
 
     setSaving(false)
     setAlreadySaved(true)
-    router.push('/home')
+    router.push('/dashboard')
   }
 
   if (loading) {
@@ -149,7 +173,7 @@ export default function JournalPage() {
             <FadeIn className="flex items-end justify-between border-b border-neutral-900 pb-5">
               <div>
                 <button
-                  onClick={() => router.push('/home')}
+                  onClick={() => router.push('/dashboard')}
                   className="text-neutral-600 hover:text-neutral-400 text-xs font-mono mb-2 block transition-colors uppercase tracking-wider"
                 >
                   ← back
@@ -259,7 +283,14 @@ export default function JournalPage() {
               <div className="flex items-center justify-between border-b border-neutral-800/60 pb-4">
                 <div>
                   <p className="text-[10px] text-neutral-500 font-mono uppercase tracking-widest">Progress Score</p>
-                  <p className="text-[11px] text-neutral-600 font-mono mt-1">{earnedPoints} / {totalPoints} pts</p>
+                  <p className="text-[11px] text-neutral-600 font-mono mt-1">{earnedWithBonus} / {totalWithBonus} pts</p>
+                  {leetcodeBonus > 0 && (
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <span className="text-[9px] text-yellow-400 font-mono bg-yellow-950/60 px-2 py-0.5 rounded-full">
+                        +{leetcodeBonus} LC bonus
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="text-right">
                   <motion.div

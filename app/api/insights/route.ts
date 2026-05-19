@@ -34,7 +34,7 @@ export async function POST() {
 
     const { data: logs, error: logsError } = await supabase
       .from('daily_logs')
-      .select('date, score, study_hours, sleep_time, reflection, earned_points, total_points')
+      .select('date, score, study_hours, sleep_time, reflection, earned_points, total_points, leetcode_solved, leetcode_bonus_points')
       .eq('user_id', user.id)
       .order('date', { ascending: false })
       .limit(14)
@@ -98,13 +98,53 @@ export async function POST() {
       apiKey: apiKey,
     })
 
+    // Fetch LeetCode username
+    let leetcodeContext = ''
+    try {
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('leetcode_username')
+        .eq('id', user.id)
+        .maybeSingle()
+
+      // Fetch LeetCode stats if username exists
+      if (profile?.leetcode_username) {
+        try {
+          const lcRes = await fetch(
+            `${process.env.NEXT_PUBLIC_SITE_URL || 'https://lockinayemenn.vercel.app'}/api/leetcode?username=${profile.leetcode_username}`
+          )
+          const lcData = await lcRes.json()
+          if (!lcData.error) {
+            leetcodeContext = `
+LeetCode stats for @${lcData.username}:
+- Current streak: ${lcData.streak} days
+- Total solved: ${lcData.totalSolved} (Easy: ${lcData.easy}, Medium: ${lcData.medium}, Hard: ${lcData.hard})
+- Today's solved: ${lcData.todaySolvedCount}
+- Problems solved today: ${lcData.todayProblems?.join(', ') || 'none'}
+`
+          }
+        } catch (fetchErr) {
+          console.warn('Failed to fetch LeetCode profile insights context:', fetchErr)
+        }
+      }
+    } catch (profileErr) {
+      console.warn('Failed to query user profile for LeetCode context:', profileErr)
+    }
+
     const prompt = `You are a personal discipline coach. Analyze this data and write a complete coach report. Be direct and specific.
 
 Habits tracked:
 ${habits?.map(h => `- ${h.name} (${h.category}, ${h.points}pts)`).join('\n')}
 
 Last ${logs.length} days (newest first):
-${logs.map(l => `${l.date}: ${l.score}% | study: ${l.study_hours || '?'}h | sleep: ${l.sleep_time || '?'} | note: "${l.reflection || 'none'}"`).join('\n')}
+${logs.map(l => `${l.date}: ${l.score}% | study: ${l.study_hours || '?'}h | sleep: ${l.sleep_time || '?'} | leetcode solved: ${l.leetcode_solved || 0} (bonus: ${l.leetcode_bonus_points || 0}pts) | note: "${l.reflection || 'none'}"`).join('\n')}
+${leetcodeContext ? `\nLeetCode data:\n${leetcodeContext}` : ''}
+${leetcodeContext ? `
+Also analyze:
+- Does LeetCode activity correlate with higher discipline scores?
+- Which days had both high discipline AND LeetCode solving?
+- Any pattern between solving problems and study hours?
+` : ''}
 
 Write exactly these 5 sections, each with 2-3 sentences or items:
 
