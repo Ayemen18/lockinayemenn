@@ -23,7 +23,13 @@ export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = (() => {
+    const d = new Date()
+    const y = d.getFullYear()
+    const m = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${y}-${m}-${day}`
+  })()
 
   useEffect(() => {
     let active = true
@@ -90,10 +96,17 @@ export default function DashboardPage() {
 
   const streak = calculateStreak(logs)
 
+  const toLocalDate = (date: Date): string => {
+    const y = date.getFullYear()
+    const m = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${y}-${m}-${day}`
+  }
+
   const last30 = Array.from({ length: 30 }, (_, i) => {
     const d = new Date()
     d.setDate(d.getDate() - (29 - i))
-    const dateStr = d.toISOString().split('T')[0]
+    const dateStr = toLocalDate(d)
     return { date: dateStr, log: logs.find(l => l.date === dateStr) }
   })
 
