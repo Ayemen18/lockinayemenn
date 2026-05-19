@@ -184,6 +184,9 @@ function SquadContent() {
         const username = memberProfile?.leetcode_username
 
         let leetcodeSolvedToday = todayLog?.leetcode_solved || 0
+        const weekLeetcodeLogs = logs?.filter(l => l.date >= weekStart && l.date !== today) || []
+        const loggedWeekSolved = weekLeetcodeLogs.reduce((s, l) => s + (l.leetcode_solved || 0), 0)
+        let leetcodeSolvedWeek = loggedWeekSolved + leetcodeSolvedToday
 
         if (username) {
           try {
@@ -191,6 +194,9 @@ function SquadContent() {
             const json = await res.json()
             if (json && !json.error) {
               leetcodeSolvedToday = json.todaySolvedCount || 0
+              if (json.weeklySolvedCount !== undefined) {
+                leetcodeSolvedWeek = Math.max(loggedWeekSolved + leetcodeSolvedToday, json.weeklySolvedCount)
+              }
               if (json.streak > streak) {
                 streak = json.streak
               }
@@ -199,10 +205,6 @@ function SquadContent() {
             console.warn('Failed to fetch real-time LeetCode stats for member:', username, err)
           }
         }
-
-        const weekLeetcodeLogs = logs?.filter(l => l.date >= weekStart && l.date !== today) || []
-        const loggedWeekSolved = weekLeetcodeLogs.reduce((s, l) => s + (l.leetcode_solved || 0), 0)
-        const leetcodeSolvedWeek = loggedWeekSolved + leetcodeSolvedToday
 
         return {
           user_id: member.user_id,

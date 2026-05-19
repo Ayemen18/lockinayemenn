@@ -69,6 +69,23 @@ export async function GET(req: Request) {
       new Map(todaySolved.map((s: any) => [s.titleSlug, s])).values()
     )
 
+    // Filter this week's solved problems (Monday to Sunday)
+    const now = new Date()
+    const currentDay = now.getDay()
+    const distanceToMonday = currentDay === 0 ? -6 : 1 - currentDay
+    const mondayDate = new Date(now)
+    mondayDate.setDate(now.getDate() + distanceToMonday)
+    mondayDate.setHours(0, 0, 0, 0)
+    const weekTimestamp = Math.floor(mondayDate.getTime() / 1000)
+
+    const weekSolved = recentSubmissions.filter(
+      (s: any) => parseInt(s.timestamp) >= weekTimestamp
+    )
+
+    const uniqueWeekSolved = Array.from(
+      new Map(weekSolved.map((s: any) => [s.titleSlug, s])).values()
+    )
+
     const stats = user.submitStats.acSubmissionNum
     const easy = stats.find((s: any) => s.difficulty === 'Easy')?.count || 0
     const medium = stats.find((s: any) => s.difficulty === 'Medium')?.count || 0
@@ -85,6 +102,7 @@ export async function GET(req: Request) {
       medium,
       hard,
       todaySolvedCount: uniqueTodaySolved.length,
+      weeklySolvedCount: uniqueWeekSolved.length,
       todayProblems: uniqueTodaySolved.map((s: any) => s.title),
     })
   } catch (err) {
