@@ -53,9 +53,9 @@ export default function HomePage() {
   useEffect(() => {
     let active = true
 
-    async function loadData(userId: string, email: string) {
+    async function loadData(userId: string, name: string) {
       try {
-        setUserName(email.split('@')[0] || '')
+        setUserName(name)
 
         const { data: logs } = await supabase
           .from('daily_logs')
@@ -88,7 +88,8 @@ export default function HomePage() {
       if (!active) return
 
       if (session?.user) {
-        loadData(session.user.id, session.user.email || '')
+        const displayName = session.user.user_metadata?.display_name || session.user.email || ''
+        loadData(session.user.id, displayName)
       } else {
         const timeout = setTimeout(() => {
           if (active) {

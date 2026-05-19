@@ -83,7 +83,7 @@ function SquadContent() {
       }
       if (active) {
         setUser(authUser)
-        setDisplayName(authUser.email?.split('@')[0] || '')
+        setDisplayName(authUser.user_metadata?.display_name || authUser.email?.split('@')[0] || '')
       }
 
       // Check for invite code in URL
