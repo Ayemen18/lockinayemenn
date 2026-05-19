@@ -86,17 +86,17 @@ export async function POST() {
       return NextResponse.json({ report: existing.report, cached: true })
     }
 
-    const apiKey = process.env.GROK_API_KEY
+    const apiKey = process.env.GEMINI_API_KEY
     if (!apiKey) {
-      console.error('GROK_API_KEY is not defined in env variables.')
+      console.error('GEMINI_API_KEY is not defined in env variables.')
       return NextResponse.json({ 
-        error: 'GROK_API_KEY is missing in your Vercel or local environment variables.' 
+        error: 'GEMINI_API_KEY is missing in your Vercel or local environment variables.' 
       }, { status: 400 })
     }
 
     const client = new OpenAI({
       apiKey: apiKey,
-      baseURL: 'https://api.x.ai/v1',
+      baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
     })
 
     const prompt = `You are a personal discipline coach analyzing someone's habit tracking data. Be direct, specific, and motivating — not generic.
@@ -135,15 +135,15 @@ Keep the whole report under 400 words. No filler. Reference their actual data th
     let report = ''
     try {
       const completion = await client.chat.completions.create({
-        model: 'grok-3',
+        model: 'gemini-2.5-flash',
         max_tokens: 800,
         messages: [{ role: 'user', content: prompt }],
       })
       report = completion.choices[0]?.message?.content || ''
     } catch (apiErr: any) {
-      console.error('xAI Grok API call failed:', apiErr)
+      console.error('Google Gemini API call failed:', apiErr)
       return NextResponse.json({ 
-        error: `xAI Grok API Error: ${apiErr.message || apiErr}` 
+        error: `Gemini API Error: ${apiErr.message || apiErr}` 
       }, { status: 502 })
     }
 
