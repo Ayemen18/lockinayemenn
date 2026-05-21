@@ -227,7 +227,7 @@ export default function InsightsPage() {
           <div>
             <h1 className="text-xl font-bold tracking-tight text-white">AI Discipline Coach</h1>
             <p className="text-xs text-neutral-500 font-mono mt-1">
-              Advanced behavior vector analysis & daily trend matrix processing
+              AI Coach pattern analysis & daily habit correlation feedback
             </p>
           </div>
 
@@ -405,8 +405,8 @@ export default function InsightsPage() {
                     </motion.div>
                   </div>
                   
-                  <p className="text-xs text-neutral-400 font-mono uppercase tracking-widest">Vectorizing behavior data...</p>
-                  <p className="text-[10px] text-neutral-600 font-mono mt-2 uppercase">crunching logs & diagnosing discipline blockers</p>
+                  <p className="text-xs text-neutral-400 font-mono uppercase tracking-widest">Analyzing habit patterns...</p>
+                  <p className="text-[10px] text-neutral-600 font-mono mt-2 uppercase">analyzing log history and finding consistency bottlenecks</p>
                 </motion.div>
               ) : (
                 <motion.div

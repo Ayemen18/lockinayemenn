@@ -360,9 +360,9 @@ function SquadContent() {
 
         <FadeIn className="flex items-start justify-between mb-10 pb-5 border-b border-neutral-900">
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-white">Squad Activity Matrix</h1>
+            <h1 className="text-xl font-bold tracking-tight text-white">Squad Dashboard</h1>
             <p className="text-xs text-neutral-500 font-mono mt-1">
-              Cross-profile telemetry & live discipline coordination
+              Live squad accountability leaderboard & coordination
             </p>
           </div>
           <div className="flex gap-2">
@@ -538,7 +538,7 @@ function SquadContent() {
                   animate={{ opacity: [0.3, 1, 0.3] }}
                   transition={{ duration: 1.5, repeat: Infinity }}
                   className="text-xs text-neutral-700 font-mono uppercase tracking-widest"
-                >scanning stats matrix...</motion.div>
+                >loading stats...</motion.div>
               </div>
             ) : (
               <AnimatePresence mode="wait">
@@ -638,7 +638,7 @@ function SquadContent() {
                                       <span className="animate-pulse absolute inline-flex h-full w-full rounded-full bg-rose-500/40 opacity-75"></span>
                                       <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-600"></span>
                                     </div>
-                                    <span className="text-[10px] text-rose-500/70 font-mono uppercase tracking-wider font-semibold">NOT LOGGED</span>
+                                    <span className="text-[10px] text-rose-500/70 font-mono uppercase tracking-wider font-semibold">OFFLINE</span>
                                   </div>
                                 )}
                               </div>
@@ -678,7 +678,7 @@ function SquadContent() {
                     transition={{ duration: 0.2 }}
                   >
                     <p className="text-xs text-neutral-500 font-mono mb-4 uppercase tracking-widest pl-1">
-                      Week of {weekStart} — Ranked by average score matrix
+                      Week of {weekStart} — Ranked by average score
                     </p>
 
                     <FadeInStagger className="space-y-3">

@@ -528,7 +528,7 @@ export default function HabitsPage() {
                 
                 {totalPoints === 0 && (
                   <p className="text-xs text-neutral-600 italic font-mono text-center py-2">
-                    Add habits to visualize point weight matrix.
+                    Add habits to visualize point distribution.
                   </p>
                 )}
               </div>

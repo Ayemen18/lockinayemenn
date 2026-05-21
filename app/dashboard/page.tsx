@@ -58,6 +58,9 @@ export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
 
+  // Heatmap View state
+  const [heatmapView, setHeatmapView] = useState<'30days' | 'month' | 'year'>('30days')
+
   const today = (() => {
     const d = new Date()
     return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
@@ -327,6 +330,52 @@ export default function DashboardPage() {
 
   const last7 = last30.slice(-7)
 
+  const getMonthViewDays = () => {
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = now.getMonth()
+    const firstDay = new Date(year, month, 1)
+    const startDayOfWeek = firstDay.getDay()
+    const totalDays = new Date(year, month + 1, 0).getDate()
+    const days = []
+    for (let i = 0; i < startDayOfWeek; i++) {
+      days.push({ date: `month-padding-${i}`, log: undefined, dayNum: 0, isPadding: true })
+    }
+    for (let d = 1; d <= totalDays; d++) {
+      const ds = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+      days.push({
+        date: ds,
+        log: logs.find(l => l.date === ds),
+        dayNum: d,
+        isPadding: false
+      })
+    }
+    return days
+  }
+
+  const getYearViewDays = () => {
+    const year = new Date().getFullYear()
+    const days = []
+    const firstDay = new Date(year, 0, 1)
+    const startDayOfWeek = firstDay.getDay()
+    for (let i = 0; i < startDayOfWeek; i++) {
+      days.push({ date: `year-padding-${i}`, log: undefined, isPadding: true })
+    }
+    const startDate = new Date(year, 0, 1)
+    const endDate = new Date(year, 11, 31)
+    const current = new Date(startDate)
+    while (current <= endDate) {
+      const ds = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}-${String(current.getDate()).padStart(2, '0')}`
+      days.push({
+        date: ds,
+        log: logs.find(l => l.date === ds),
+        isPadding: false
+      })
+      current.setDate(current.getDate() + 1)
+    }
+    return days
+  }
+
   // Gamified Quest Logic: Iron Week (75%+ score for 7 consecutive days)
   const getIronWeekProgress = () => {
     const sorted = [...logs].sort((a,b) => b.date.localeCompare(a.date))
@@ -465,7 +514,7 @@ export default function DashboardPage() {
                               : 'bg-neutral-950 text-neutral-500 border-neutral-800 hover:border-neutral-700 hover:text-neutral-300'
                           }`}
                         >
-                          {forecastMode ? "exit simulator" : "forecast mode"}
+                          {forecastMode ? "exit forecast" : "forecast score"}
                         </button>
                       </div>
 
@@ -505,7 +554,7 @@ export default function DashboardPage() {
                     <div className="mt-auto">
                       {forecastMode ? (
                         <p className="text-[10px] text-amber-500/80 font-mono uppercase tracking-wider flex items-center gap-1.5 animate-pulse select-none">
-                          ⚠️ Simulated Cockpit mode active.
+                          ⚠️ Forecast mode active. Adjust checklist to see simulated score.
                         </p>
                       ) : !todayLog ? (
                         <motion.button
@@ -527,7 +576,7 @@ export default function DashboardPage() {
                     <div>
                       <div className="flex items-center justify-between mb-3">
                         <p className="text-[10px] text-neutral-500 font-mono uppercase tracking-widest">
-                          {forecastMode ? "[ SIMULATED CHECKLIST ]" : "[ TODAY'S CHECKLIST ]"}
+                          {forecastMode ? "[ SIMULATED CHECKS ]" : "[ TODAY'S CHECKS ]"}
                         </p>
                         {savingChecklist && (
                           <span className="text-[9px] text-emerald-450 font-mono animate-pulse">
@@ -592,7 +641,7 @@ export default function DashboardPage() {
                           onClick={applyForecast}
                           className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 text-neutral-950 text-[10px] font-bold font-mono py-2 rounded-lg hover:shadow-[0_0_12px_rgba(245,158,11,0.3)] transition-all cursor-pointer uppercase tracking-wider text-center"
                         >
-                          Apply Forecast to Today →
+                          Save selections to today →
                         </button>
                       ) : (
                         <button 
@@ -614,52 +663,150 @@ export default function DashboardPage() {
             <FadeIn delay={0.1}>
               <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
                 
-                {/* 30-Day Heatmap (3/5 width on xl) */}
+                {/* Dynamic Multi-View Heatmap (3/5 width on xl) */}
                 <div className="xl:col-span-3 premium-card bg-neutral-950/30 backdrop-blur-lg border border-neutral-900/40 shadow-[0_8px_32px_rgba(0,0,0,0.65)] rounded-2xl p-5 flex flex-col justify-between">
                   <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <p className="text-xs text-neutral-500 font-mono uppercase tracking-widest">30-day consistency</p>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] text-neutral-750 font-mono uppercase">less</span>
-                        {['#101012','#14532d','#047857','#059669','#10b981'].map(c => (
-                          <div key={c} className="shadow-[0_0_4px_rgba(0,0,0,0.3)]" style={{ width: 10, height: 10, borderRadius: 2, background: c }} />
+                    <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                      <p className="text-xs text-neutral-500 font-mono uppercase tracking-widest">
+                        {heatmapView === '30days' ? '30-day consistency' :
+                         heatmapView === 'month' ? 'Monthly Calendar' :
+                         `Yearly Overview (${new Date().getFullYear()})`}
+                      </p>
+                      
+                      {/* View Selector Buttons */}
+                      <div className="flex bg-neutral-900/60 p-0.5 rounded-lg border border-neutral-850 select-none">
+                        {(['30days', 'month', 'year'] as const).map(view => (
+                          <button
+                            key={view}
+                            type="button"
+                            onClick={() => setHeatmapView(view)}
+                            className={`text-[8px] font-mono uppercase px-2 py-1 rounded transition-all cursor-pointer ${
+                              heatmapView === view
+                                ? 'bg-neutral-800 text-white font-bold'
+                                : 'text-neutral-500 hover:text-neutral-350'
+                            }`}
+                          >
+                            {view === '30days' ? '30 Days' : view === 'month' ? 'Month' : 'Year'}
+                          </button>
                         ))}
-                        <span className="text-[10px] text-neutral-750 font-mono uppercase">more</span>
                       </div>
                     </div>
-                    {/* Fixed square heatmap cells */}
-                    <div className="relative z-10 flex flex-wrap gap-[5px]">
-                      {last30.map(({ date, log }, i) => {
-                        const isToday = date === today
-                        return (
-                          <motion.div
-                            key={date}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.05 + i * 0.01 }}
-                            whileHover={{ scale: 1.25, y: -2, zIndex: 20 }}
-                            onClick={() => {
-                              setSelectedDate(date)
-                              setModalOpen(true)
-                            }}
-                            title={log ? `${date}: ${log.score}% (click to inspect)` : `${date}: Not logged`}
-                            className={`cursor-pointer transition-all duration-100 rounded-[4px] border border-transparent ${
-                              log && log.score >= 80 ? 'hover:shadow-[0_0_8px_#10b981] hover:border-emerald-400' : 'hover:shadow-[0_0_8px_rgba(255,255,255,0.15)]'
-                            }`}
-                            style={{
-                              width: '24px',
-                              height: '24px',
-                              background: log ? heatColor(log.score) : '#101012',
-                              outline: isToday ? '1.5px solid #10b981' : 'none',
-                              outlineOffset: '1.5px',
-                              flexShrink: 0,
-                            }}
-                          />
-                        )
-                      })}
-                    </div>
+
+                    {/* Heatmap Rendering */}
+                    {heatmapView === '30days' && (
+                      <div className="relative z-10 flex flex-wrap gap-[5px]">
+                        {last30.map(({ date, log }, i) => {
+                          const isToday = date === today
+                          return (
+                            <motion.div
+                              key={date}
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ delay: 0.05 + i * 0.01 }}
+                              whileHover={{ scale: 1.25, y: -2, zIndex: 20 }}
+                              onClick={() => {
+                                setSelectedDate(date)
+                                setModalOpen(true)
+                              }}
+                              title={log ? `${date}: ` + log.score + `% (click to inspect)` : `${date}: Not logged`}
+                              className={`cursor-pointer transition-all duration-100 rounded-[4px] border border-transparent ${
+                                log && log.score >= 80 ? 'hover:shadow-[0_0_8px_#10b981] hover:border-emerald-450' : 'hover:shadow-[0_0_8px_rgba(255,255,255,0.15)]'
+                              }`}
+                              style={{
+                                width: '24px',
+                                height: '24px',
+                                background: log ? heatColor(log.score) : '#101012',
+                                outline: isToday ? '1.5px solid #10b981' : 'none',
+                                outlineOffset: '1.5px',
+                                flexShrink: 0,
+                              }}
+                            />
+                          )
+                        })}
+                      </div>
+                    )}
+
+                    {heatmapView === 'month' && (
+                      <div className="max-w-[280px] mx-auto z-10 relative">
+                        {/* Day names row */}
+                        <div className="grid grid-cols-7 gap-1 text-center mb-1.5 text-[8px] font-mono text-neutral-600 uppercase font-bold">
+                          {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => (
+                            <div key={day}>{day}</div>
+                          ))}
+                        </div>
+                        {/* Calendar cells grid */}
+                        <div className="grid grid-cols-7 gap-[5px]">
+                          {getMonthViewDays().map(({ date, log, dayNum, isPadding }) => {
+                            if (isPadding) {
+                              return <div key={date} className="w-8 h-8 opacity-0 pointer-events-none" />
+                            }
+                            const isToday = date === today
+                            return (
+                              <motion.div
+                                key={date}
+                                whileHover={{ scale: 1.15, zIndex: 20 }}
+                                onClick={() => {
+                                  setSelectedDate(date)
+                                  setModalOpen(true)
+                                }}
+                                title={log ? `${date}: ` + log.score + `% (click to inspect)` : `${date}: Not logged`}
+                                className={`cursor-pointer transition-all duration-100 rounded-lg border border-transparent relative w-8 h-8 flex items-center justify-center ${
+                                  log && log.score >= 80 ? 'hover:shadow-[0_0_8px_#10b981] hover:border-emerald-450' : 'hover:shadow-[0_0_8px_rgba(255,255,255,0.15)]'
+                                }`}
+                                style={{
+                                  background: log ? heatColor(log.score) : '#101012',
+                                  outline: isToday ? '1.5px solid #10b981' : 'none',
+                                  outlineOffset: '1.5px',
+                                }}
+                              >
+                                <span className={`text-[9px] font-mono font-semibold ${
+                                  log ? 'text-white' : 'text-neutral-650'
+                                }`}>
+                                  {dayNum}
+                                </span>
+                              </motion.div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {heatmapView === 'year' && (
+                      <div className="relative z-10 select-none">
+                        {/* Year Contribution grid aligned to Sunday-Saturday columns */}
+                        <div className="grid grid-rows-7 grid-flow-col gap-[3px] overflow-x-auto py-1 scrollbar-thin scrollbar-thumb-neutral-850 scrollbar-track-transparent pr-1">
+                          {getYearViewDays().map(({ date, log, isPadding }, i) => {
+                            if (isPadding) {
+                              return <div key={date} className="w-2.5 h-2.5 opacity-0 pointer-events-none" style={{ borderRadius: '2px' }} />
+                            }
+                            const isToday = date === today
+                            return (
+                              <motion.div
+                                key={date}
+                                whileHover={{ scale: 1.4, zIndex: 20 }}
+                                onClick={() => {
+                                  setSelectedDate(date)
+                                  setModalOpen(true)
+                                }}
+                                title={log ? `${date}: ` + log.score + `% (click to inspect)` : `${date}: Not logged`}
+                                className={`cursor-pointer transition-all duration-100 border border-transparent ${
+                                  log && log.score >= 80 ? 'hover:shadow-[0_0_6px_#10b981] hover:border-emerald-450' : 'hover:shadow-[0_0_4px_rgba(255,255,255,0.15)]'
+                                }`}
+                                style={{
+                                  width: '10px',
+                                  height: '10px',
+                                  borderRadius: '2px',
+                                  background: log ? heatColor(log.score) : '#101012',
+                                  outline: isToday ? '1px solid #10b981' : 'none',
+                                  outlineOffset: '1px',
+                                }}
+                              />
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  
                   {/* Fine Dotted milestone progress track */}
                   <div className="flex items-center justify-between mt-5 border-t border-neutral-900/60 pt-3 relative">
                     <span className="text-[10px] text-neutral-600 font-mono uppercase z-10 bg-[#0a0a0a] pr-2">
@@ -737,20 +884,20 @@ export default function DashboardPage() {
                 <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.015)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none select-none z-0" />
                 
                 <div className="absolute top-0 right-0 p-3 text-[9px] text-neutral-600 font-mono select-none">
-                  [ CODE: SYSTEM DIAGNOSTIC ]
+                  [ COACH REPORT ]
                 </div>
                 <p className="text-xs text-neutral-500 font-mono uppercase tracking-widest mb-4">Behavioral insights</p>
                 
                 {/* Display leak alert if found */}
                 {leakDiagnostic && (
                   <div className="mb-4 bg-rose-950/20 border border-rose-900/45 rounded-xl px-4 py-3 relative overflow-hidden z-10">
-                    <div className="absolute top-0 right-0 p-2 text-[8px] text-rose-500/55 font-mono select-none uppercase">[ leak detected ]</div>
+                    <div className="absolute top-0 right-0 p-2 text-[8px] text-rose-500/55 font-mono select-none uppercase">[ BOTTLENECK ]</div>
                     <div className="flex gap-2.5 items-start">
                       <div className="w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5 flex-shrink-0 animate-pulse shadow-[0_0_6px_#f43f5e]" />
                       <div>
-                        <h4 className="text-xs font-semibold text-rose-400 font-mono uppercase tracking-wide">Bottleneck Vector Alert</h4>
+                        <h4 className="text-xs font-semibold text-rose-400 font-mono uppercase tracking-wide">Consistency Bottleneck Alert</h4>
                         <p className="text-xs text-rose-350 leading-relaxed font-mono mt-1">
-                          Habit <span className="text-rose-100 font-bold font-sans">"${leakDiagnostic.name}"</span> is logged at only <span className="font-bold font-mono">${leakDiagnostic.rate}%</span> consistency. This cost-leak is draining an average of <span className="text-rose-300 font-bold font-mono">-${leakDiagnostic.impact} pts</span> daily score potential. Focus on securing this link tomorrow morning.
+                          Habit <span className="text-rose-100 font-bold font-sans">"${leakDiagnostic.name}"</span> is logged at only <span className="font-bold font-mono">${leakDiagnostic.rate}%</span> consistency. This habit gap reduces your score by an average of <span className="text-rose-300 font-bold font-mono">-${leakDiagnostic.impact} pts</span> daily score potential. Focus on completing this habit tomorrow morning.
                         </p>
                       </div>
                     </div>
@@ -769,7 +916,7 @@ export default function DashboardPage() {
                 ) : (
                   <div className="relative z-10">
                     <p className="text-xs text-neutral-500 mb-3 font-mono">
-                      Log ${Math.max(0, 5 - logs.length)} more days to unlock pattern diagnostics.
+                      Log ${Math.max(0, 5 - logs.length)} more days to unlock pattern insights.
                     </p>
                     <div className="flex gap-1.5 mt-2">
                       {Array.from({ length: 5 }).map((_, i) => (
@@ -829,7 +976,7 @@ export default function DashboardPage() {
             {/* Active Quests Panel */}
             <FadeIn delay={0.2}>
               <div className="premium-card bg-neutral-950/30 backdrop-blur-lg border border-neutral-900/40 shadow-[0_8px_32px_rgba(0,0,0,0.65)] rounded-2xl p-5 relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-3 text-[9px] text-neutral-655 font-mono select-none">[ MISSION QUOTAS ]</div>
+                <div className="absolute top-0 right-0 p-3 text-[9px] text-neutral-655 font-mono select-none">[ MILESTONES ]</div>
                 <p className="text-xs text-neutral-500 font-mono uppercase tracking-widest mb-4">Active Quests</p>
                 
                 <div className="space-y-4">
@@ -860,13 +1007,13 @@ export default function DashboardPage() {
               </div>
             </FadeIn>
 
-            {/* Squad Peer Radar Panel */}
+            {/* Squad Status Panel */}
             <FadeIn delay={0.25}>
               <div className="premium-card bg-neutral-950/30 backdrop-blur-lg border border-neutral-900/40 shadow-[0_8px_32px_rgba(0,0,0,0.65)] rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between">
                 <div className="absolute top-0 right-0 p-3 text-[9px] text-neutral-655 font-mono select-none">
-                  {squadInfo ? `[ SQUAD: ${squadInfo.squadName.toUpperCase()} ]` : '[ NO ACTIVE POD ]'}
+                  {squadInfo ? `[ SQUAD: ${squadInfo.squadName.toUpperCase()} ]` : '[ NO ACTIVE SQUAD ]'}
                 </div>
-                <p className="text-xs text-neutral-500 font-mono uppercase tracking-widest mb-3">Squad Peer Radar</p>
+                <p className="text-xs text-neutral-500 font-mono uppercase tracking-widest mb-3">Squad Status</p>
                 
                 {squadInfo ? (
                   <div className="space-y-1.5 max-h-[105px] overflow-y-auto pr-1 scrollbar-none">
