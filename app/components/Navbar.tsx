@@ -54,46 +54,46 @@ export default function Navbar() {
   }, [])
 
   return (
-    <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+    <header className={`sticky top-0 z-50 w-full transition-all duration-350 ${
       scrolled
-        ? 'bg-[#0a0a0a]/95 backdrop-blur-xl border-b border-neutral-800/80'
-        : 'bg-[#0a0a0a]/80 backdrop-blur-md border-b border-neutral-800/40'
+        ? 'bg-[#0a0a0a]/65 backdrop-blur-xl border-b border-neutral-900/60 shadow-[0_4px_30px_rgba(0,0,0,0.8)]'
+        : 'bg-[#0a0a0a]/40 backdrop-blur-md border-b border-neutral-900/20'
     }`}>
       <div className="w-full max-w-7xl mx-auto px-6 h-14 flex items-center justify-between gap-6">
 
         {/* Logo */}
         <button
           onClick={() => router.push('/dashboard')}
-          className="flex items-center gap-2.5 flex-shrink-0 group"
+          className="flex items-center gap-2.5 flex-shrink-0 group cursor-pointer"
         >
-          <div className="w-7 h-7 rounded-lg bg-neutral-800 border border-neutral-700 flex items-center justify-center group-hover:border-neutral-500 transition-colors">
-            <span className="text-white text-xs font-bold">L</span>
+          <div className="w-7 h-7 rounded-lg bg-neutral-950 border border-neutral-800/80 flex items-center justify-center group-hover:border-neutral-600/80 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.01)] group-hover:shadow-[0_0_12px_rgba(255,255,255,0.035)]">
+            <span className="text-white text-xs font-mono font-bold tracking-tighter">L</span>
           </div>
-          <span className="text-sm font-semibold tracking-tight text-white">
+          <span className="text-sm font-semibold tracking-tight text-white group-hover:text-neutral-300 transition-colors">
             LockIn
           </span>
-          <span className="relative flex h-1.5 w-1.5 ml-0.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
+          <span className="relative flex h-2 w-2 ml-0.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
           </span>
         </button>
 
         {/* Nav links */}
-        <nav className="flex items-center gap-1 bg-neutral-900/50 border border-neutral-800/60 px-1.5 py-1.5 rounded-xl">
+        <nav className="flex items-center gap-0.5 bg-neutral-950/50 border border-neutral-900 px-1 py-1 rounded-xl shadow-inner">
           {navLinks.map(link => {
             const isActive = pathname === link.path
             return (
               <button
                 key={link.path}
                 onClick={() => router.push(link.path)}
-                className={`relative px-3.5 py-1.5 text-xs font-mono rounded-lg transition-colors duration-150 ${
-                  isActive ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'
+                className={`relative px-3.5 py-1.5 text-xs font-mono rounded-lg transition-colors duration-150 cursor-pointer ${
+                  isActive ? 'text-white font-bold' : 'text-neutral-500 hover:text-neutral-300'
                 }`}
               >
                 {isActive && (
                   <motion.div
                     layoutId="activeNav"
-                    className="absolute inset-0 bg-neutral-800 rounded-lg border border-neutral-700/60"
+                    className="absolute inset-0 bg-neutral-900/90 rounded-lg border border-neutral-800 shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                   />
                 )}
@@ -112,35 +112,38 @@ export default function Navbar() {
                   onClick={() => router.push('/journal')}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`flex items-center gap-2 text-xs font-mono px-3 py-1.5 rounded-lg border transition-colors ${
+                  className={`flex items-center gap-2 text-[10px] uppercase tracking-wider font-mono font-bold px-3 py-1.5 rounded-lg border cursor-pointer transition-all duration-300 ${
                     todayScore && todayScore >= 80
-                      ? 'bg-green-950/60 border-green-900/60 text-green-400 hover:bg-green-950'
+                      ? 'bg-emerald-950/30 border-emerald-800/50 text-emerald-400 hover:bg-emerald-950/60 shadow-[0_0_12px_rgba(16,185,129,0.06)]'
                       : todayScore && todayScore >= 60
-                      ? 'bg-yellow-950/60 border-yellow-900/60 text-yellow-400 hover:bg-yellow-950'
-                      : 'bg-red-950/60 border-red-900/60 text-red-400 hover:bg-red-950'
+                      ? 'bg-amber-950/30 border-amber-800/50 text-amber-400 hover:bg-amber-950/60 shadow-[0_0_12px_rgba(245,158,11,0.06)]'
+                      : 'bg-rose-950/30 border-rose-800/50 text-rose-400 hover:bg-rose-950/60 shadow-[0_0_12px_rgba(244,63,94,0.06)]'
                   }`}
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                  {todayScore}% today
+                  <span className="relative flex h-1.5 w-1.5 mr-0.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-current opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-current"></span>
+                  </span>
+                  {todayScore}% logged
                 </motion.button>
               ) : (
                 <motion.button
                   onClick={() => router.push('/journal')}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="flex items-center gap-2 text-xs font-mono px-3 py-1.5 rounded-lg bg-white text-black font-semibold hover:bg-neutral-100 transition-colors"
+                  className="flex items-center gap-2 text-xs font-mono px-3.5 py-1.5 rounded-lg bg-white text-black font-extrabold hover:bg-neutral-100 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.08)] hover:shadow-[0_0_16px_rgba(255,255,255,0.18)] cursor-pointer"
                 >
                   Log today
                 </motion.button>
               )}
 
-              <div className="flex items-center gap-3 pl-3 border-l border-neutral-800">
+              <div className="flex items-center gap-3 pl-3 border-l border-neutral-900">
                 <button
                   onClick={() => router.push('/profile')}
                   title="Profile & Settings"
-                  className="w-6 h-6 rounded-full bg-neutral-800 border border-neutral-700 hover:border-neutral-500 flex items-center justify-center transition-colors"
+                  className="w-6.5 h-6.5 rounded-full bg-neutral-900 border border-neutral-800/80 hover:border-neutral-600 flex items-center justify-center transition-all duration-300 cursor-pointer shadow-inner hover:scale-105"
                 >
-                  <span className="text-xs text-neutral-400 font-mono">
+                  <span className="text-[10px] text-neutral-300 font-mono font-extrabold">
                     {userName.charAt(0).toUpperCase()}
                   </span>
                 </button>
@@ -150,7 +153,7 @@ export default function Navbar() {
                     router.push('/login')
                   }}
                   title="Sign out"
-                  className="text-neutral-700 hover:text-neutral-400 transition-colors ml-1 p-1 rounded-lg hover:bg-neutral-800"
+                  className="text-neutral-700 hover:text-rose-500 hover:bg-rose-950/15 transition-all ml-1 p-1 rounded-lg cursor-pointer"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>

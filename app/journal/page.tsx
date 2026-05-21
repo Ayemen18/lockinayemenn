@@ -237,70 +237,78 @@ export default function JournalPage() {
             </FadeIn>
 
             {/* Checklist items */}
-            <FadeIn delay={0.05} className="bg-neutral-900/20 border border-neutral-800/40 rounded-2xl overflow-hidden">
+            <FadeIn delay={0.05} className="bg-neutral-900/40 backdrop-blur-md border border-neutral-800/80 rounded-2xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.35)]">
               <FadeInStagger>
-                {habits.map((habit, i) => (
-                  <StaggerItem key={habit.id}>
-                    <motion.div
-                      onClick={() => toggle(habit.id)}
-                      whileTap={{ scale: 0.995 }}
-                      className={`flex items-center gap-4 px-5 py-4 cursor-pointer transition-all duration-200 hover:bg-neutral-900/60 select-none ${
-                        i !== habits.length - 1 ? 'border-b border-neutral-800/40' : ''
-                      } ${checked.has(habit.id) ? 'bg-neutral-900/10' : ''}`}
-                    >
-                      {/* Check indicator */}
+                {habits.map((habit, i) => {
+                  const isChecked = checked.has(habit.id);
+                  return (
+                    <StaggerItem key={habit.id}>
                       <motion.div
-                        initial={{ borderColor: '#262626' }}
-                        animate={{
-                          borderColor: checked.has(habit.id) ? '#22c55e' : '#262626',
-                          backgroundColor: checked.has(habit.id) ? 'rgba(34, 197, 94, 0.06)' : 'rgba(0, 0, 0, 0)',
-                        }}
-                        transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-                        style={{ borderStyle: 'solid', borderWidth: '1px' }}
-                        className="w-[18px] h-[18px] rounded-[5px] flex items-center justify-center flex-shrink-0"
+                        onClick={() => toggle(habit.id)}
+                        whileTap={{ scale: 0.995 }}
+                        className={`flex items-center gap-4 px-5 py-4 cursor-pointer transition-all duration-300 select-none relative ${
+                          i !== habits.length - 1 ? 'border-b border-neutral-800/40' : ''
+                        } ${
+                          isChecked 
+                            ? 'bg-emerald-950/10 hover:bg-emerald-950/15 border-l-2 border-l-emerald-500/85 pl-[18px] shadow-[inset_4px_0_12px_rgba(16,185,129,0.03)]' 
+                            : 'hover:bg-neutral-900/40 border-l-2 border-l-transparent pl-[18px]'
+                        }`}
                       >
-                        <AnimatePresence>
-                          {checked.has(habit.id) && (
-                            <svg width="8" height="6" viewBox="0 0 10 8" fill="none">
-                              <motion.path
-                                d="M1 4.2l2.3 2.3L9 1.5"
-                                stroke="#22c55e"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                initial={{ pathLength: 0 }}
-                                animate={{ pathLength: 1 }}
-                                exit={{ pathLength: 0 }}
-                                transition={{ duration: 0.2, ease: 'easeOut' }}
-                              />
-                            </svg>
-                          )}
-                        </AnimatePresence>
-                      </motion.div>
-                      
-                      {/* Animated Strikethrough Text */}
-                      <span className="flex-1 text-sm font-medium relative py-0.5">
-                        <span className={`inline-block transition-colors duration-300 ${
-                          checked.has(habit.id) ? 'text-neutral-500' : 'text-neutral-200'
-                        }`}>
-                          {habit.name}
+                        {/* Check indicator */}
+                        <motion.div
+                          initial={{ borderColor: '#262626' }}
+                          animate={{
+                            borderColor: isChecked ? '#10b981' : '#262626',
+                            backgroundColor: isChecked ? 'rgba(16, 185, 129, 0.08)' : 'rgba(0, 0, 0, 0)',
+                            boxShadow: isChecked ? '0 0 10px rgba(16, 185, 129, 0.2)' : 'none'
+                          }}
+                          transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                          style={{ borderStyle: 'solid', borderWidth: '1px' }}
+                          className="w-[18px] h-[18px] rounded-[5px] flex items-center justify-center flex-shrink-0"
+                        >
+                          <AnimatePresence>
+                            {isChecked && (
+                              <svg width="8" height="6" viewBox="0 0 10 8" fill="none">
+                                <motion.path
+                                  d="M1 4.2l2.3 2.3L9 1.5"
+                                  stroke="#10b981"
+                                  strokeWidth="2.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  initial={{ pathLength: 0 }}
+                                  animate={{ pathLength: 1 }}
+                                  exit={{ pathLength: 0 }}
+                                  transition={{ duration: 0.2, ease: 'easeOut' }}
+                                />
+                              </svg>
+                            )}
+                          </AnimatePresence>
+                        </motion.div>
+                        
+                        {/* Animated Strikethrough Text */}
+                        <span className="flex-1 text-sm font-medium relative py-0.5">
+                          <span className={`inline-block transition-colors duration-300 font-mono text-[13px] ${
+                            isChecked ? 'text-neutral-500/80 font-normal' : 'text-neutral-200'
+                          }`}>
+                            {habit.name}
+                          </span>
+                          
+                          {/* Custom Strikethrough Line */}
+                          <motion.span
+                            initial={{ width: '0%' }}
+                            animate={{ width: isChecked ? '100%' : '0%' }}
+                            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                            className="absolute left-0 top-1/2 h-[1px] bg-neutral-700 pointer-events-none"
+                          />
                         </span>
                         
-                        {/* Custom Strikethrough Line */}
-                        <motion.span
-                          initial={{ width: '0%' }}
-                          animate={{ width: checked.has(habit.id) ? '100%' : '0%' }}
-                          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                          className="absolute left-0 top-1/2 h-[1px] bg-neutral-600 pointer-events-none"
-                        />
-                      </span>
-                      
-                      <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-mono uppercase font-medium tracking-wide ${getCategoryScheme(habit.category).text}`}>
-                        {habit.points} pts
-                      </span>
-                    </motion.div>
-                  </StaggerItem>
-                ))}
+                        <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-mono uppercase font-medium tracking-wide ${getCategoryScheme(habit.category).text}`}>
+                          {habit.points} pts
+                        </span>
+                      </motion.div>
+                    </StaggerItem>
+                  );
+                })}
               </FadeInStagger>
 
               {habits.length === 0 && (
@@ -328,7 +336,10 @@ export default function JournalPage() {
             )}
 
             {/* Score & Save Console Card */}
-            <FadeIn delay={0.1} className="bg-neutral-900 border border-neutral-800/80 rounded-2xl p-5 space-y-5">
+            <FadeIn delay={0.1} className="bg-neutral-900/40 backdrop-blur-md border border-neutral-800/80 rounded-2xl p-5 space-y-5 shadow-[0_4px_20px_rgba(0,0,0,0.35)] relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-3 text-[9px] text-neutral-750 font-mono select-none pointer-events-none">
+                [ TELEMETRY CONSOLE ]
+              </div>
               
               {/* Score breakdown */}
               <div className="flex items-center justify-between border-b border-neutral-800/60 pb-4">
@@ -337,7 +348,7 @@ export default function JournalPage() {
                   <p className="text-[11px] text-neutral-600 font-mono mt-1">{earnedWithBonus} / {totalWithBonus} pts</p>
                   {leetcodeBonus > 0 && (
                     <div className="flex items-center gap-1.5 mt-1">
-                      <span className="text-[9px] text-yellow-400 font-mono bg-yellow-950/60 px-2 py-0.5 rounded-full">
+                      <span className="text-[9px] text-amber-400 font-mono bg-amber-950/60 px-2 py-0.5 rounded-full border border-amber-900/30">
                         +{leetcodeBonus} LC bonus
                       </span>
                     </div>
@@ -348,7 +359,7 @@ export default function JournalPage() {
                     key={score}
                     initial={{ opacity: 0.5, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="text-3xl font-bold text-white tracking-tight"
+                    className="text-3xl font-bold tracking-tight text-white font-mono drop-shadow-[0_0_12px_rgba(255,255,255,0.15)]"
                   >
                     {score}%
                   </motion.div>
@@ -356,18 +367,18 @@ export default function JournalPage() {
               </div>
 
               {/* Progress Bar */}
-              <div className="w-full bg-neutral-950 border border-neutral-900 rounded-full h-1.5 overflow-hidden">
+              <div className="w-full bg-neutral-950 border border-neutral-900 rounded-full h-2 overflow-hidden">
                 <motion.div
                   animate={{ width: `${score}%` }}
                   transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-                  className="h-full bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.4)]"
+                  className="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]"
                 />
               </div>
 
               {/* Numeric Parameters */}
               <div className="grid grid-cols-2 gap-3.5 pt-1">
                 <div>
-                  <label className="text-[10px] text-neutral-600 font-mono uppercase tracking-widest block mb-1.5">Study hours</label>
+                  <label className="text-[10px] text-neutral-500 font-mono uppercase tracking-widest block mb-1.5">Study hours</label>
                   <input
                     type="number"
                     step="0.1"
@@ -375,29 +386,29 @@ export default function JournalPage() {
                     value={studyHours}
                     onChange={e => setStudyHours(e.target.value)}
                     placeholder="e.g. 4.5"
-                    className="w-full bg-[#0a0a0a] border border-neutral-800 rounded-xl px-3.5 py-2 text-sm text-neutral-200 outline-none focus:border-neutral-600 transition-colors placeholder:text-neutral-800 font-mono"
+                    className="w-full bg-[#0d0d0d] border border-neutral-800/80 rounded-xl px-3.5 py-2 text-sm text-neutral-200 outline-none focus:border-cyan-500/50 focus:shadow-[0_0_10px_rgba(6,182,212,0.12)] transition-all duration-300 placeholder:text-neutral-800 font-mono"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-neutral-600 font-mono uppercase tracking-widest block mb-1.5">Sleep time</label>
+                  <label className="text-[10px] text-neutral-500 font-mono uppercase tracking-widest block mb-1.5">Sleep time</label>
                   <input
                     type="time"
                     value={sleepTime}
                     onChange={e => setSleepTime(e.target.value)}
-                    className="w-full bg-[#0a0a0a] border border-neutral-800 rounded-xl px-3 py-2 text-sm text-neutral-200 outline-none focus:border-neutral-600 transition-colors font-mono"
+                    className="w-full bg-[#0d0d0d] border border-neutral-800/80 rounded-xl px-3 py-2 text-sm text-neutral-200 outline-none focus:border-cyan-500/50 focus:shadow-[0_0_10px_rgba(6,182,212,0.12)] transition-all duration-300 font-mono"
                   />
                 </div>
               </div>
 
               {/* Reflection */}
               <div>
-                <label className="text-[10px] text-neutral-600 font-mono uppercase tracking-widest block mb-1.5">Reflection</label>
+                <label className="text-[10px] text-neutral-500 font-mono uppercase tracking-widest block mb-1.5">Reflection</label>
                 <textarea
                   value={reflection}
                   onChange={e => setReflection(e.target.value)}
                   placeholder="How was today? What could be better tomorrow?"
                   rows={3}
-                  className="w-full bg-[#0a0a0a] border border-neutral-800 rounded-xl px-3.5 py-2.5 text-sm text-neutral-200 outline-none focus:border-neutral-600 transition-colors resize-none placeholder:text-neutral-800 leading-relaxed font-sans"
+                  className="w-full bg-[#0d0d0d] border border-neutral-800/80 rounded-xl px-3.5 py-2.5 text-sm text-neutral-200 outline-none focus:border-cyan-500/50 focus:shadow-[0_0_10px_rgba(6,182,212,0.12)] transition-all duration-300 resize-none placeholder:text-neutral-800 leading-relaxed font-sans"
                 />
               </div>
 
@@ -406,9 +417,9 @@ export default function JournalPage() {
                 <motion.button
                   onClick={save}
                   disabled={saving}
-                  whileHover={{ scale: 1.01 }}
+                  whileHover={{ scale: 1.01, filter: 'brightness(1.1)' }}
                   whileTap={{ scale: 0.99 }}
-                  className="w-full bg-white text-black text-xs font-semibold py-3 rounded-xl hover:bg-neutral-200 transition-colors disabled:opacity-40 tracking-tight"
+                  className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-neutral-950 text-xs font-bold font-mono tracking-widest uppercase py-3 rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.25)] hover:shadow-[0_0_20px_rgba(16,185,129,0.45)] transition-all duration-300 disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
                 >
                   {saving ? (
                     <motion.span animate={{ opacity: [1, 0.5, 1] }} transition={{ duration: 1, repeat: Infinity }}>

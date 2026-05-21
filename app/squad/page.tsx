@@ -360,20 +360,22 @@ function SquadContent() {
 
         <FadeIn className="flex items-start justify-between mb-10 pb-5 border-b border-neutral-900">
           <div>
-            <h1 className="text-2xl font-semibold text-white tracking-tight">Squad</h1>
-            <p className="text-sm text-neutral-600 font-mono mt-1">Compete with your people</p>
+            <h1 className="text-xl font-bold tracking-tight text-white">Squad Activity Matrix</h1>
+            <p className="text-xs text-neutral-500 font-mono mt-1">
+              Cross-profile telemetry & live discipline coordination
+            </p>
           </div>
           <div className="flex gap-2">
             <button
               onClick={() => { setShowJoin(true); setShowCreate(false) }}
-              className="text-sm text-neutral-400 hover:text-white px-4 py-2 rounded-lg border border-neutral-800 hover:border-neutral-600 transition-colors"
+              className="text-xs font-mono font-bold tracking-widest uppercase text-neutral-400 hover:text-white px-4 py-2.5 rounded-xl border border-neutral-850 hover:border-neutral-700 bg-neutral-900/35 hover:bg-neutral-900/60 shadow-[inset_0_1px_1px_rgba(255,255,255,0.02)] transition-all duration-200 cursor-pointer select-none"
             >
               Join squad
             </button>
             <motion.button
-              whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }}
               onClick={() => { setShowCreate(true); setShowJoin(false) }}
-              className="text-sm font-medium bg-white text-black px-4 py-2 rounded-lg hover:bg-neutral-100 transition-colors"
+              className="text-xs font-mono font-bold tracking-widest uppercase bg-gradient-to-r from-emerald-500 to-teal-500 text-neutral-950 px-4.5 py-2.5 rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_20px_rgba(16,185,129,0.45)] transition-all duration-300 cursor-pointer select-none"
             >
               Create squad
             </motion.button>
@@ -387,10 +389,13 @@ function SquadContent() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="bg-neutral-950 border border-neutral-900 rounded-2xl p-5 mb-6 overflow-hidden"
+              className="bg-neutral-900/40 backdrop-blur-md border border-neutral-800/80 rounded-2xl p-6 mb-8 shadow-xl relative overflow-hidden"
             >
-              <p className="text-xs text-neutral-500 font-mono uppercase tracking-widest mb-3">
-                {showCreate ? 'Create new squad' : 'Join a squad'}
+              <div className="absolute top-0 right-0 p-3 text-[9px] text-neutral-750 font-mono select-none pointer-events-none">
+                [ {showCreate ? 'NEW VECTOR SQUAD' : 'ATTACH EXISTING POD'} ]
+              </div>
+              <p className="text-xs text-neutral-500 font-mono uppercase tracking-widest mb-4">
+                {showCreate ? 'Configure new squadron' : 'Enter security access code'}
               </p>
 
               {showCreate && (
@@ -399,7 +404,7 @@ function SquadContent() {
                   placeholder="Squad name — e.g. DSA grinders"
                   value={squadName}
                   onChange={e => setSquadName(e.target.value)}
-                  className="w-full bg-[#0a0a0a] border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-neutral-200 outline-none focus:border-neutral-600 transition-colors mb-3 placeholder:text-neutral-800"
+                  className="w-full bg-[#070708] border border-neutral-850 hover:border-neutral-800 rounded-xl px-4 py-3 text-sm text-neutral-200 outline-none focus:border-emerald-500/50 focus:shadow-[0_0_12px_rgba(16,185,129,0.1)] transition-all duration-300 mb-3 placeholder:text-neutral-700 font-sans"
                 />
               )}
 
@@ -410,7 +415,7 @@ function SquadContent() {
                   value={joinCode}
                   onChange={e => setJoinCode(e.target.value.toUpperCase())}
                   maxLength={6}
-                  className="w-full bg-[#0a0a0a] border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-neutral-200 outline-none focus:border-neutral-600 transition-colors mb-3 placeholder:text-neutral-800 font-mono tracking-widest"
+                  className="w-full bg-[#070708] border border-neutral-850 hover:border-neutral-800 rounded-xl px-4 py-3 text-sm text-neutral-200 outline-none focus:border-emerald-500/50 focus:shadow-[0_0_12px_rgba(16,185,129,0.1)] transition-all duration-300 mb-3 placeholder:text-neutral-700 font-mono tracking-widest"
                 />
               )}
 
@@ -419,11 +424,11 @@ function SquadContent() {
                 placeholder="Your display name in this squad"
                 value={displayName}
                 onChange={e => setDisplayName(e.target.value)}
-                className="w-full bg-[#0a0a0a] border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-neutral-200 outline-none focus:border-neutral-600 transition-colors mb-4 placeholder:text-neutral-800"
+                className="w-full bg-[#070708] border border-neutral-850 hover:border-neutral-800 rounded-xl px-4 py-3 text-sm text-neutral-200 outline-none focus:border-emerald-500/50 focus:shadow-[0_0_12px_rgba(16,185,129,0.1)] transition-all duration-300 mb-4 placeholder:text-neutral-700 font-sans"
               />
 
               {error && (
-                <p className="text-xs text-red-400 font-mono mb-3">{error}</p>
+                <p className="text-xs text-red-400 font-mono mb-4">{error}</p>
               )}
 
               <div className="flex gap-2">
@@ -431,13 +436,13 @@ function SquadContent() {
                   whileTap={{ scale: 0.98 }}
                   onClick={showCreate ? createSquad : joinSquad}
                   disabled={saving}
-                  className="flex-1 bg-white text-black text-xs font-semibold py-3 rounded-xl hover:bg-neutral-100 transition-colors disabled:opacity-40"
+                  className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 text-neutral-950 text-xs font-bold font-mono tracking-widest uppercase py-3.5 rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] disabled:opacity-40 transition-all duration-300 select-none cursor-pointer"
                 >
-                  {saving ? 'Saving...' : showCreate ? 'Create' : 'Join'}
+                  {saving ? 'SAVING DATA...' : showCreate ? 'INITIALIZE SQUAD' : 'ESTABLISH CONNECT'}
                 </motion.button>
                 <button
                   onClick={() => { setShowCreate(false); setShowJoin(false); setError('') }}
-                  className="px-4 text-xs font-semibold text-neutral-500 border border-neutral-800 rounded-xl hover:bg-neutral-800 transition-colors uppercase tracking-wider"
+                  className="px-5 text-xs font-bold font-mono text-neutral-500 border border-neutral-850 rounded-xl hover:border-neutral-700 hover:text-neutral-350 hover:bg-neutral-900/40 transition-all duration-200 uppercase tracking-widest"
                 >
                   Cancel
                 </button>
@@ -447,13 +452,13 @@ function SquadContent() {
         </AnimatePresence>
 
         {squads.length === 0 && !showCreate && !showJoin ? (
-          <FadeIn className="bg-neutral-900 border border-neutral-800/60 border-dashed rounded-2xl p-16 text-center">
-            <p className="text-2xl mb-2">⚔️</p>
-            <p className="text-sm text-white font-medium mb-1">No squad yet</p>
-            <p className="text-xs text-neutral-600 font-mono mb-4">Create one and challenge your friends to keep up.</p>
+          <FadeIn className="bg-neutral-900/35 border border-neutral-800/60 border-dashed rounded-2xl p-16 text-center">
+            <p className="text-2xl mb-3">⚔️</p>
+            <p className="text-sm text-white font-semibold mb-1">No squad connected yet</p>
+            <p className="text-xs text-neutral-600 font-mono uppercase tracking-widest mb-5">Create a deployment or join to compete with peers.</p>
             <button
               onClick={() => setShowCreate(true)}
-              className="text-sm bg-white text-black font-semibold px-5 py-2 rounded-xl hover:bg-neutral-100 transition-colors"
+              className="text-xs font-bold font-mono tracking-widest uppercase bg-gradient-to-r from-emerald-500 to-teal-500 text-neutral-950 px-6 py-3.5 rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-all duration-300 cursor-pointer select-none"
             >
               Create your squad
             </button>
@@ -461,43 +466,46 @@ function SquadContent() {
         ) : activeSquad && (
           <>
             {/* Squad selector + invite */}
-            <FadeIn className="flex items-center justify-between mb-6">
-              <div className="flex gap-2">
-                {squads.map(squad => (
-                  <button
-                    key={squad.id}
-                    onClick={async () => {
-                      setActiveSquad(squad)
-                      await loadMemberStats(squad.id, user.id, true)
-                    }}
-                    className={`text-xs px-4 py-2 rounded-lg transition-colors font-medium ${
-                      activeSquad.id === squad.id
-                        ? 'bg-neutral-800 text-white'
-                        : 'text-neutral-500 hover:text-white hover:bg-neutral-800/60'
-                    }`}
-                  >
-                    {squad.name}
-                  </button>
-                ))}
+            <FadeIn className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-8 p-3 rounded-2xl bg-neutral-900/25 border border-neutral-900/60 backdrop-blur-sm">
+              <div className="flex flex-wrap gap-1.5">
+                {squads.map(squad => {
+                  const isActive = activeSquad.id === squad.id;
+                  return (
+                    <button
+                      key={squad.id}
+                      onClick={async () => {
+                        setActiveSquad(squad)
+                        await loadMemberStats(squad.id, user.id, true)
+                      }}
+                      className={`text-xs font-mono tracking-wider px-4.5 py-2 rounded-xl transition-all duration-200 select-none cursor-pointer ${
+                        isActive
+                          ? 'bg-neutral-850 text-white border border-neutral-800/60 font-bold shadow-[0_0_12px_rgba(255,255,255,0.03)]'
+                          : 'text-neutral-500 hover:text-neutral-350 border border-transparent'
+                      }`}
+                    >
+                      {squad.name}
+                    </button>
+                  );
+                })}
               </div>
-              <div className="flex gap-2 items-center">
+              <div className="flex flex-wrap gap-2 items-center">
                 <button
                   onClick={copyCode}
-                  className="text-xs font-mono text-neutral-500 hover:text-white bg-neutral-900 border border-neutral-800/80 px-3.5 py-2 rounded-xl transition-colors tracking-widest font-semibold"
+                  className="text-[10px] font-mono text-neutral-450 hover:text-emerald-450 hover:border-emerald-500/30 bg-[#0a0a0b]/80 border border-neutral-850 hover:bg-[#0f0f12] px-3.5 py-2 rounded-xl transition-all duration-250 tracking-widest font-semibold cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.01)]"
                 >
                   CODE: {activeSquad.code}
                 </button>
                 <motion.button
                   whileTap={{ scale: 0.96 }}
                   onClick={copyInviteLink}
-                  className="text-xs font-mono text-neutral-400 hover:text-white bg-neutral-900 border border-neutral-800/80 px-3.5 py-2 rounded-xl transition-colors"
+                  className="text-[10px] font-mono text-neutral-400 hover:text-cyan-400 hover:border-cyan-500/30 bg-[#0a0a0b]/80 border border-neutral-850 hover:bg-[#0f0f12] px-3.5 py-2 rounded-xl transition-all duration-250 cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.01)]"
                 >
                   {copied ? '✓ COPIED' : 'INVITE LINK'}
                 </motion.button>
                 <motion.button
                   whileTap={{ scale: 0.96 }}
                   onClick={leaveSquad}
-                  className="text-xs font-mono text-red-500 hover:text-red-400 bg-red-950/20 border border-red-900/30 px-3.5 py-2 rounded-xl transition-colors font-medium"
+                  className="text-[10px] font-mono text-rose-500 hover:text-rose-400 hover:border-rose-500/30 bg-rose-950/10 border border-rose-950/30 px-3.5 py-2 rounded-xl transition-all duration-250 cursor-pointer"
                 >
                   LEAVE SQUAD
                 </motion.button>
@@ -505,20 +513,23 @@ function SquadContent() {
             </FadeIn>
 
             {/* View toggle */}
-            <FadeIn className="flex gap-1 bg-neutral-900 border border-neutral-800/60 rounded-xl p-1 w-fit mb-6">
-              {(['daily', 'weekly', 'leetcode'] as const).map(v => (
-                <button
-                  key={v}
-                  onClick={() => setView(v)}
-                  className={`text-[10px] font-mono px-4 py-1.5 rounded-lg transition-colors capitalize ${
-                    view === v
-                      ? 'bg-white text-black font-semibold'
-                      : 'text-neutral-500 hover:text-white'
-                  }`}
-                >
-                  {v === 'daily' ? "Today's board" : v === 'weekly' ? 'Weekly ranking' : '⌨️ LeetCode'}
-                </button>
-              ))}
+            <FadeIn className="flex gap-1.5 bg-neutral-950 border border-neutral-900/80 rounded-xl p-1 w-fit mb-6 shadow-inner">
+              {(['daily', 'weekly', 'leetcode'] as const).map(v => {
+                const isActive = view === v;
+                return (
+                  <button
+                    key={v}
+                    onClick={() => setView(v)}
+                    className={`text-[10px] font-mono tracking-wider px-4.5 py-1.5 rounded-lg transition-all duration-200 capitalize select-none cursor-pointer ${
+                      isActive
+                        ? 'bg-neutral-850 text-white font-semibold shadow-sm border border-neutral-800/40'
+                        : 'text-neutral-500 hover:text-neutral-300'
+                    }`}
+                  >
+                    {v === 'daily' ? "Today's board" : v === 'weekly' ? 'Weekly ranking' : '⌨️ LeetCode'}
+                  </button>
+                );
+              })}
             </FadeIn>
 
             {statsLoading ? (
@@ -526,8 +537,8 @@ function SquadContent() {
                 <motion.div
                   animate={{ opacity: [0.3, 1, 0.3] }}
                   transition={{ duration: 1.5, repeat: Infinity }}
-                  className="text-sm text-neutral-700 font-mono"
-                >loading stats...</motion.div>
+                  className="text-xs text-neutral-700 font-mono uppercase tracking-widest"
+                >scanning stats matrix...</motion.div>
               </div>
             ) : (
               <AnimatePresence mode="wait">
@@ -540,83 +551,120 @@ function SquadContent() {
                     transition={{ duration: 0.2 }}
                   >
                     {/* Daily header */}
-                    <div className="grid grid-cols-5 gap-4 px-4 mb-3">
+                    <div className="grid grid-cols-5 gap-4 px-5 mb-3">
                       {['Member', "Today's score", 'Streak', 'Avg study', 'Consistency'].map(h => (
                         <p key={h} className="text-[10px] text-neutral-600 font-mono uppercase tracking-widest">{h}</p>
                       ))}
                     </div>
 
-                    <FadeInStagger className="space-y-2">
-                      {memberStats.map((m, i) => (
-                        <StaggerItem key={m.user_id}>
-                          <div className={`grid grid-cols-5 gap-4 items-center bg-neutral-900 border rounded-xl px-5 py-4 shadow-sm ${
-                            m.user_id === user?.id
-                              ? 'border-neutral-600 shadow-md'
-                              : 'border-neutral-800/80'
-                          }`}>
-                            <div className="flex items-center gap-3">
-                              <div className={`text-xs font-mono w-5 text-center ${
-                                i === 0 ? 'text-yellow-400' :
-                                i === 1 ? 'text-neutral-400' :
-                                i === 2 ? 'text-orange-600' :
-                                'text-neutral-700'
-                              }`}>
-                                {i === 0 ? '①' : i === 1 ? '②' : i === 2 ? '③' : `${i + 1}`}
+                    <FadeInStagger className="space-y-2.5">
+                      {memberStats.map((m, i) => {
+                        const isSelf = m.user_id === user?.id;
+                        return (
+                          <StaggerItem key={m.user_id}>
+                            <div className={`grid grid-cols-5 gap-4 items-center border rounded-2xl px-5 py-4.5 transition-all duration-300 relative overflow-hidden group ${
+                              isSelf
+                                ? 'border-emerald-500/35 bg-emerald-950/10 shadow-[0_0_20px_rgba(16,185,129,0.06),inset_0_0_12px_rgba(16,185,129,0.03)]'
+                                : i === 0
+                                  ? 'border-amber-500/25 bg-amber-950/5 shadow-[0_0_20px_rgba(245,158,11,0.04),inset_0_0_12px_rgba(245,158,11,0.02)]'
+                                  : i === 1
+                                    ? 'border-slate-400/20 bg-slate-900/10 shadow-[0_0_15px_rgba(148,163,184,0.03)]'
+                                    : i === 2
+                                      ? 'border-amber-750/20 bg-amber-950/5 shadow-[0_0_12px_rgba(180,83,9,0.02)]'
+                                      : 'border-neutral-850 bg-neutral-900/35 hover:border-neutral-800/80 hover:bg-neutral-900/40'
+                            }`}>
+                              {/* Decorative left rank ribbon */}
+                              <div className={`absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl ${
+                                isSelf ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]' :
+                                i === 0 ? 'bg-amber-500/60 shadow-[0_0_6px_rgba(245,158,11,0.4)]' :
+                                i === 1 ? 'bg-slate-450/40' :
+                                i === 2 ? 'bg-amber-700/40' : 'bg-transparent'
+                              }`} />
+                              
+                              {/* Glowing background highlights for top ranks */}
+                              {isSelf && <div className="absolute -right-16 -top-16 w-36 h-36 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-500/8 transition-all duration-500" />}
+                              {i === 0 && !isSelf && <div className="absolute -right-16 -top-16 w-36 h-36 bg-amber-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-amber-500/8 transition-all duration-500" />}
+                              {i === 1 && !isSelf && <div className="absolute -right-16 -top-16 w-36 h-36 bg-slate-400/3 rounded-full blur-2xl pointer-events-none group-hover:bg-slate-400/6 transition-all duration-500" />}
+                              {i === 2 && !isSelf && <div className="absolute -right-16 -top-16 w-36 h-36 bg-amber-700/3 rounded-full blur-2xl pointer-events-none" />}
+
+                              <div className="flex items-center gap-3 z-10">
+                                <div className={`text-xs font-mono w-10 text-left font-bold ${
+                                  i === 0 ? 'text-amber-400' :
+                                  i === 1 ? 'text-slate-350' :
+                                  i === 2 ? 'text-amber-700' :
+                                  'text-neutral-600 font-medium'
+                                }`}>
+                                  {i < 9 ? `[0${i + 1}]` : `[${i + 1}]`}
+                                </div>
+                                <div>
+                                  <p className="text-sm text-white font-semibold flex items-center gap-1.5 font-sans">
+                                    {m.display_name}
+                                    {m.streak >= 7 && <span className="text-xs">🔥</span>}
+                                  </p>
+                                  {isSelf && (
+                                    <p className="text-[10px] text-emerald-400 font-mono mt-0.5 tracking-wider uppercase font-semibold">YOU</p>
+                                  )}
+                                </div>
                               </div>
-                              <div>
-                                <p className="text-sm text-white font-semibold">{m.display_name}</p>
-                                {m.user_id === user?.id && (
-                                  <p className="text-[10px] text-neutral-600 font-mono mt-0.5">you</p>
+
+                              <div className="z-10">
+                                {m.todayLogged ? (
+                                  <div className="flex items-center gap-2.5">
+                                    <div className="relative flex h-2 w-2">
+                                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                    </div>
+                                    <div className="flex items-center gap-2 flex-1">
+                                      <span className={`text-sm font-bold font-mono ${
+                                        m.todayScore! >= 80 ? 'text-emerald-400' :
+                                        m.todayScore! >= 60 ? 'text-amber-400' :
+                                        'text-rose-450'
+                                      }`}>{m.todayScore}%</span>
+                                      <div className="flex-1 max-w-16 bg-neutral-955 rounded-full h-1 overflow-hidden border border-neutral-900 hidden sm:block">
+                                        <div
+                                          className={`h-full rounded-full ${
+                                            m.todayScore! >= 80 ? 'bg-gradient-to-r from-emerald-500 to-emerald-400 shadow-[0_0_6px_#10b981]' :
+                                            m.todayScore! >= 60 ? 'bg-gradient-to-r from-amber-500 to-amber-400 shadow-[0_0_6px_#f59e0b]' :
+                                            'bg-gradient-to-r from-rose-500 to-rose-450 shadow-[0_0_6px_#f43f5e]'
+                                          }`}
+                                          style={{ width: `${m.todayScore}%` }}
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center gap-2.5">
+                                    <div className="relative flex h-2 w-2">
+                                      <span className="animate-pulse absolute inline-flex h-full w-full rounded-full bg-rose-500/40 opacity-75"></span>
+                                      <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-600"></span>
+                                    </div>
+                                    <span className="text-[10px] text-rose-500/70 font-mono uppercase tracking-wider font-semibold">NOT LOGGED</span>
+                                  </div>
                                 )}
                               </div>
-                            </div>
 
-                            <div>
-                              {m.todayLogged ? (
-                                <div className="flex items-center gap-2">
-                                  <span className={`text-sm font-bold ${
-                                    m.todayScore! >= 80 ? 'text-green-400' :
-                                    m.todayScore! >= 60 ? 'text-yellow-400' :
-                                    'text-red-400'
-                                  }`}>{m.todayScore}%</span>
-                                  <div className="flex-1 max-w-16 bg-neutral-800 rounded-full h-1 overflow-hidden">
-                                    <div
-                                      className={`h-full rounded-full ${
-                                        m.todayScore! >= 80 ? 'bg-green-500' :
-                                        m.todayScore! >= 60 ? 'bg-yellow-500' :
-                                        'bg-red-500'
-                                      }`}
-                                      style={{ width: `${m.todayScore}%` }}
-                                    />
-                                  </div>
-                                </div>
-                              ) : (
-                                <span className="text-xs text-neutral-600 font-mono uppercase">not logged</span>
-                              )}
-                            </div>
+                              <div className="flex items-center gap-1.5 z-10">
+                                <span className="text-sm font-semibold text-white font-mono">{m.streak}</span>
+                                <span className="text-xs text-neutral-500 font-mono">days</span>
+                              </div>
 
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-sm font-semibold text-white">{m.streak}</span>
-                              <span className="text-xs text-neutral-600 font-mono">days</span>
-                              {m.streak >= 7 && <span className="text-xs">🔥</span>}
-                            </div>
+                              <div className="z-10">
+                                <span className="text-sm text-neutral-300 font-mono">
+                                  {m.studyHours ? `${m.studyHours}h` : '—'}
+                                </span>
+                              </div>
 
-                            <div>
-                              <span className="text-sm text-neutral-300 font-mono">
-                                {m.studyHours ? `${m.studyHours}h` : '—'}
-                              </span>
+                              <div className="z-10">
+                                <span className={`text-sm font-semibold font-mono ${
+                                  m.consistency >= 80 ? 'text-emerald-400' :
+                                  m.consistency >= 60 ? 'text-amber-400' :
+                                  'text-neutral-500'
+                                }`}>{m.consistency}%</span>
+                              </div>
                             </div>
-
-                            <div>
-                              <span className={`text-sm font-medium font-mono ${
-                                m.consistency >= 80 ? 'text-green-400' :
-                                m.consistency >= 60 ? 'text-yellow-400' :
-                                'text-neutral-400'
-                              }`}>{m.consistency}%</span>
-                            </div>
-                          </div>
-                        </StaggerItem>
-                      ))}
+                          </StaggerItem>
+                        );
+                      })}
                     </FadeInStagger>
                   </motion.div>
                 )}
@@ -629,73 +677,99 @@ function SquadContent() {
                     exit={{ opacity: 0, x: -8 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <p className="text-xs text-neutral-500 font-mono mb-4">
-                      WEEK OF {weekStart} — RANKED BY AVERAGE SCORE
+                    <p className="text-xs text-neutral-500 font-mono mb-4 uppercase tracking-widest pl-1">
+                      Week of {weekStart} — Ranked by average score matrix
                     </p>
 
                     <FadeInStagger className="space-y-3">
-                      {weeklyRanking.map((m, i) => (
-                        <StaggerItem key={m.user_id}>
-                          <div className={`flex items-center gap-4 bg-neutral-900 border rounded-2xl px-5 py-4 ${
-                            m.user_id === user?.id ? 'border-neutral-600' : 'border-neutral-800/80'
-                          }`}>
-                            <div className={`text-2xl font-bold w-8 text-center ${
-                              i === 0 ? 'text-yellow-400' :
-                              i === 1 ? 'text-neutral-400' :
-                              i === 2 ? 'text-orange-600' :
-                              'text-neutral-700'
+                      {weeklyRanking.map((m, i) => {
+                        const isSelf = m.user_id === user?.id;
+                        return (
+                          <StaggerItem key={m.user_id}>
+                            <div className={`flex items-center gap-4 border rounded-2xl px-5 py-4.5 transition-all duration-300 relative overflow-hidden group ${
+                              isSelf
+                                ? 'border-emerald-500/35 bg-emerald-950/10 shadow-[0_0_20px_rgba(16,185,129,0.06),inset_0_0_12px_rgba(16,185,129,0.03)]'
+                                : i === 0
+                                  ? 'border-amber-500/25 bg-amber-950/5 shadow-[0_0_20px_rgba(245,158,11,0.04),inset_0_0_12px_rgba(245,158,11,0.02)]'
+                                  : i === 1
+                                    ? 'border-slate-400/20 bg-slate-900/10 shadow-[0_0_15px_rgba(148,163,184,0.03)]'
+                                    : i === 2
+                                      ? 'border-amber-750/20 bg-amber-950/5 shadow-[0_0_12px_rgba(180,83,9,0.02)]'
+                                      : 'border-neutral-850 bg-neutral-900/35 hover:border-neutral-800/80 hover:bg-neutral-900/40'
                             }`}>
-                              {i + 1}
-                            </div>
+                              {/* Decorative left rank ribbon */}
+                              <div className={`absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl ${
+                                isSelf ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]' :
+                                i === 0 ? 'bg-amber-500/60 shadow-[0_0_6px_rgba(245,158,11,0.4)]' :
+                                i === 1 ? 'bg-slate-450/40' :
+                                i === 2 ? 'bg-amber-700/40' : 'bg-transparent'
+                              }`} />
+                              
+                              {/* Glowing background highlights for top ranks */}
+                              {isSelf && <div className="absolute -right-16 -top-16 w-36 h-36 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-500/8 transition-all duration-500" />}
+                              {i === 0 && !isSelf && <div className="absolute -right-16 -top-16 w-36 h-36 bg-amber-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-amber-500/8 transition-all duration-500" />}
+                              {i === 1 && !isSelf && <div className="absolute -right-16 -top-16 w-36 h-36 bg-slate-400/3 rounded-full blur-2xl pointer-events-none group-hover:bg-slate-400/6 transition-all duration-500" />}
+                              {i === 2 && !isSelf && <div className="absolute -right-16 -top-16 w-36 h-36 bg-amber-700/3 rounded-full blur-2xl pointer-events-none" />}
 
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1.5">
-                                <p className="text-sm font-bold text-white">{m.display_name}</p>
-                                {m.user_id === user?.id && (
-                                  <span className="text-[10px] text-neutral-600 font-mono uppercase">you</span>
-                                )}
-                                {m.streak >= 7 && <span className="text-xs">🔥</span>}
+                              <div className={`text-xs font-mono w-10 text-left font-bold z-10 ${
+                                i === 0 ? 'text-amber-400' :
+                                i === 1 ? 'text-slate-350' :
+                                i === 2 ? 'text-amber-700' :
+                                'text-neutral-600 font-medium'
+                              }`}>
+                                {i < 9 ? `[0${i + 1}]` : `[${i + 1}]`}
                               </div>
-                              <div className="w-full bg-neutral-850 rounded-full h-1 overflow-hidden">
-                                <motion.div
-                                  initial={{ width: 0 }}
-                                  animate={{ width: `${m.weekAvg}%` }}
-                                  transition={{ duration: 0.6, delay: i * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
-                                  className={`h-full rounded-full ${
-                                    i === 0 ? 'bg-yellow-500' :
-                                    i === 1 ? 'bg-neutral-400' :
-                                    'bg-neutral-600'
-                                  }`}
-                                />
-                              </div>
-                            </div>
 
-                            <div className="text-right">
-                              <div className="text-2xl font-bold text-white tracking-tight">{m.weekAvg}%</div>
-                              <div className="text-[9px] text-neutral-500 font-mono uppercase tracking-wider mt-0.5">week avg</div>
-                            </div>
+                              <div className="flex-1 z-10">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <p className="text-sm font-bold text-white font-sans">{m.display_name}</p>
+                                  {isSelf && (
+                                    <span className="text-[10px] text-emerald-400 font-mono uppercase tracking-wider font-semibold">YOU</span>
+                                  )}
+                                  {m.streak >= 7 && <span className="text-xs">🔥</span>}
+                                </div>
+                                <div className="w-full bg-neutral-950 rounded-full h-1.5 overflow-hidden border border-neutral-900">
+                                  <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${m.weekAvg}%` }}
+                                    transition={{ duration: 0.6, delay: i * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+                                    className={`h-full rounded-full ${
+                                      isSelf ? 'bg-gradient-to-r from-emerald-500 to-emerald-400 shadow-[0_0_6px_#10b981]' :
+                                      i === 0 ? 'bg-gradient-to-r from-amber-500 to-amber-400 shadow-[0_0_6px_#f59e0b]' :
+                                      i === 1 ? 'bg-gradient-to-r from-slate-400 to-slate-300 shadow-[0_0_6px_#94a3b8]' :
+                                      'bg-gradient-to-r from-neutral-600 to-neutral-500'
+                                    }`}
+                                  />
+                                </div>
+                              </div>
 
-                            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-right ml-4 border-l border-neutral-850 pl-4">
-                              <div>
-                                <div className="text-xs font-semibold text-white font-mono">{m.streak}d</div>
-                                <div className="text-[9px] text-neutral-600 font-mono uppercase">streak</div>
+                              <div className="text-right z-10 ml-4">
+                                <div className="text-2xl font-bold text-white tracking-tight font-mono">{m.weekAvg}%</div>
+                                <div className="text-[9px] text-neutral-500 font-mono uppercase tracking-wider mt-0.5">week avg</div>
                               </div>
-                              <div>
-                                <div className="text-xs font-semibold text-white font-mono">{m.consistency}%</div>
-                                <div className="text-[9px] text-neutral-600 font-mono uppercase">cons.</div>
-                              </div>
-                              <div>
-                                <div className="text-xs font-semibold text-white font-mono">{m.studyHours ? `${m.studyHours}h` : '—'}</div>
-                                <div className="text-[9px] text-neutral-600 font-mono uppercase">study</div>
-                              </div>
-                              <div>
-                                <div className="text-xs font-semibold text-white font-mono">{m.allTimeAvg}%</div>
-                                <div className="text-[9px] text-neutral-600 font-mono uppercase">all-time</div>
+
+                              <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-right ml-4 border-l border-neutral-850 pl-4 z-10">
+                                <div>
+                                  <div className="text-xs font-semibold text-white font-mono">{m.streak}d</div>
+                                  <div className="text-[9px] text-neutral-600 font-mono uppercase">streak</div>
+                                </div>
+                                <div>
+                                  <div className="text-xs font-semibold text-white font-mono">{m.consistency}%</div>
+                                  <div className="text-[9px] text-neutral-600 font-mono uppercase">cons.</div>
+                                </div>
+                                <div>
+                                  <div className="text-xs font-semibold text-white font-mono">{m.studyHours ? `${m.studyHours}h` : '—'}</div>
+                                  <div className="text-[9px] text-neutral-600 font-mono uppercase">study</div>
+                                </div>
+                                <div>
+                                  <div className="text-xs font-semibold text-white font-mono">{m.allTimeAvg}%</div>
+                                  <div className="text-[9px] text-neutral-600 font-mono uppercase">all-time</div>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </StaggerItem>
-                      ))}
+                          </StaggerItem>
+                        );
+                      })}
                     </FadeInStagger>
                   </motion.div>
                 )}
@@ -708,79 +782,107 @@ function SquadContent() {
                     exit={{ opacity: 0, x: -8 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <p className="text-xs text-neutral-500 font-mono mb-4">
-                      TODAY'S LEETCODE BOARD — RANKED BY PROBLEMS SOLVED IN LAST 24 HOURS
+                    <p className="text-xs text-neutral-500 font-mono mb-4 uppercase tracking-widest pl-1">
+                      Today's LeetCode Board — Ranked by problems solved in last 24 hours
                     </p>
 
                     <FadeInStagger className="space-y-3">
                       {[...memberStats]
                         .sort((a, b) => b.leetcodeSolvedToday - a.leetcodeSolvedToday)
-                        .map((m, i) => (
-                          <StaggerItem key={m.user_id}>
-                            <div className={`flex items-center gap-4 bg-neutral-900 border rounded-2xl px-5 py-4 ${
-                              m.user_id === user?.id ? 'border-neutral-600 shadow-md' : 'border-neutral-800/80'
-                            }`}>
-                              <div className={`text-2xl font-bold w-8 text-center ${
-                                i === 0 ? 'text-yellow-400' :
-                                i === 1 ? 'text-neutral-400' :
-                                i === 2 ? 'text-orange-600' :
-                                'text-neutral-700'
-                              }`}>{i + 1}</div>
+                        .map((m, i) => {
+                          const isSelf = m.user_id === user?.id;
+                          return (
+                            <StaggerItem key={m.user_id}>
+                              <div className={`flex items-center gap-4 border rounded-2xl px-5 py-4.5 transition-all duration-300 relative overflow-hidden group ${
+                                isSelf
+                                  ? 'border-emerald-500/35 bg-emerald-950/10 shadow-[0_0_20px_rgba(16,185,129,0.06),inset_0_0_12px_rgba(16,185,129,0.03)]'
+                                  : i === 0
+                                    ? 'border-amber-500/25 bg-amber-950/5 shadow-[0_0_20px_rgba(245,158,11,0.04),inset_0_0_12px_rgba(245,158,11,0.02)]'
+                                    : i === 1
+                                      ? 'border-slate-400/20 bg-slate-900/10 shadow-[0_0_15px_rgba(148,163,184,0.03)]'
+                                      : i === 2
+                                        ? 'border-amber-750/20 bg-amber-950/5 shadow-[0_0_12px_rgba(180,83,9,0.02)]'
+                                        : 'border-neutral-850 bg-neutral-900/35 hover:border-neutral-800/80 hover:bg-neutral-900/40'
+                              }`}>
+                                {/* Decorative left rank ribbon */}
+                                <div className={`absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl ${
+                                  isSelf ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]' :
+                                  i === 0 ? 'bg-amber-500/60 shadow-[0_0_6px_rgba(245,158,11,0.4)]' :
+                                  i === 1 ? 'bg-slate-450/40' :
+                                  i === 2 ? 'bg-amber-700/40' : 'bg-transparent'
+                                }`} />
+                                
+                                {/* Glowing background highlights for top ranks */}
+                                {isSelf && <div className="absolute -right-16 -top-16 w-36 h-36 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-500/8 transition-all duration-500" />}
+                                {i === 0 && !isSelf && <div className="absolute -right-16 -top-16 w-36 h-36 bg-amber-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-amber-500/8 transition-all duration-500" />}
+                                {i === 1 && !isSelf && <div className="absolute -right-16 -top-16 w-36 h-36 bg-slate-400/3 rounded-full blur-2xl pointer-events-none group-hover:bg-slate-400/6 transition-all duration-500" />}
+                                {i === 2 && !isSelf && <div className="absolute -right-16 -top-16 w-36 h-36 bg-amber-700/3 rounded-full blur-2xl pointer-events-none" />}
 
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-2">
-                                  <p className="text-sm font-semibold text-white">{m.display_name}</p>
-                                  {m.user_id === user?.id && (
-                                    <span className="text-[10px] text-neutral-600 font-mono uppercase">you</span>
-                                  )}
+                                <div className={`text-xs font-mono w-10 text-left font-bold z-10 ${
+                                  i === 0 ? 'text-amber-400' :
+                                  i === 1 ? 'text-slate-350' :
+                                  i === 2 ? 'text-amber-700' :
+                                  'text-neutral-600 font-medium'
+                                }`}>
+                                  {i < 9 ? `[0${i + 1}]` : `[${i + 1}]`}
                                 </div>
-                                <div className="w-full bg-neutral-850 rounded-full h-1 overflow-hidden">
-                                  <motion.div
-                                    initial={{ width: 0 }}
-                                    animate={{ width: Math.max(...memberStats.map(x => x.leetcodeSolvedToday)) > 0
-                                      ? `${(m.leetcodeSolvedToday / Math.max(...memberStats.map(x => x.leetcodeSolvedToday || 1))) * 100}%`
-                                      : '0%'
-                                    }}
-                                    transition={{ duration: 0.6, delay: i * 0.1 }}
-                                    className={`h-full rounded-full ${
-                                      i === 0 ? 'bg-yellow-500' :
-                                      i === 1 ? 'bg-neutral-400' :
-                                      'bg-neutral-600'
-                                    }`}
-                                  />
+
+                                <div className="flex-1 z-10">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <p className="text-sm font-semibold text-white font-sans">{m.display_name}</p>
+                                    {isSelf && (
+                                      <span className="text-[10px] text-emerald-400 font-mono uppercase tracking-wider font-semibold">YOU</span>
+                                    )}
+                                  </div>
+                                  <div className="w-full bg-neutral-950 rounded-full h-1.5 overflow-hidden border border-neutral-900">
+                                    <motion.div
+                                      initial={{ width: 0 }}
+                                      animate={{ width: Math.max(...memberStats.map(x => x.leetcodeSolvedToday)) > 0
+                                        ? `${(m.leetcodeSolvedToday / Math.max(...memberStats.map(x => x.leetcodeSolvedToday || 1))) * 100}%`
+                                        : '0%'
+                                      }}
+                                      transition={{ duration: 0.6, delay: i * 0.1 }}
+                                      className={`h-full rounded-full ${
+                                        isSelf ? 'bg-gradient-to-r from-emerald-500 to-emerald-400 shadow-[0_0_6px_#10b981]' :
+                                        i === 0 ? 'bg-gradient-to-r from-amber-500 to-amber-400 shadow-[0_0_6px_#f59e0b]' :
+                                        i === 1 ? 'bg-gradient-to-r from-slate-400 to-slate-300 shadow-[0_0_6px_#94a3b8]' :
+                                        'bg-gradient-to-r from-neutral-600 to-neutral-500'
+                                      }`}
+                                    />
+                                  </div>
+                                </div>
+
+                                <div className="text-right ml-4 z-10">
+                                  <div className="text-2xl font-bold text-white tracking-tight font-mono">{m.leetcodeSolvedToday}</div>
+                                  <div className="text-[9px] text-neutral-500 font-mono uppercase tracking-wider mt-0.5">solved today</div>
+                                </div>
+
+                                <div className="text-right ml-4 border-l border-neutral-850 pl-4 z-10">
+                                  <div className="text-lg font-bold text-neutral-300 font-mono">
+                                    {m.leetcodeTotalSolved !== null ? m.leetcodeTotalSolved : '—'}
+                                  </div>
+                                  <div className="text-[9px] text-neutral-600 font-mono uppercase mt-0.5">all-time</div>
+                                </div>
+
+                                <div className="text-right ml-4 border-l border-neutral-850 pl-4 min-w-[70px] z-10">
+                                  <div className="text-lg font-bold text-white font-mono flex items-center justify-end gap-1">
+                                    {m.leetcodeStreak}
+                                    <span className="text-xs">🔥</span>
+                                  </div>
+                                  <div className="text-[9px] text-neutral-600 font-mono uppercase mt-0.5">streak</div>
                                 </div>
                               </div>
-
-                              <div className="text-right ml-4">
-                                <div className="text-2xl font-bold text-white tracking-tight">{m.leetcodeSolvedToday}</div>
-                                <div className="text-[9px] text-neutral-500 font-mono uppercase tracking-wider mt-0.5">solved today</div>
-                              </div>
-
-                              <div className="text-right ml-4 border-l border-neutral-850 pl-4">
-                                <div className="text-lg font-bold text-neutral-300 font-mono">
-                                  {m.leetcodeTotalSolved !== null ? m.leetcodeTotalSolved : '—'}
-                                </div>
-                                <div className="text-[9px] text-neutral-650 font-mono uppercase mt-0.5">all-time</div>
-                              </div>
-
-                              <div className="text-right ml-4 border-l border-neutral-850 pl-4 min-w-[70px]">
-                                <div className="text-lg font-bold text-white font-mono flex items-center justify-end gap-1">
-                                  {m.leetcodeStreak}
-                                  <span className="text-xs">🔥</span>
-                                </div>
-                                <div className="text-[9px] text-neutral-650 font-mono uppercase mt-0.5">streak</div>
-                              </div>
-                            </div>
-                          </StaggerItem>
-                        ))}
+                            </StaggerItem>
+                          );
+                        })}
                     </FadeInStagger>
 
                     {memberStats.every(m => m.leetcodeSolvedToday === 0) && (
-                      <div className="bg-neutral-900 border border-neutral-800/60 border-dashed rounded-2xl p-12 text-center mt-4">
+                      <div className="bg-neutral-900/35 border border-neutral-800/80 border-dashed rounded-2xl p-12 text-center mt-4">
                         <p className="text-2xl mb-2">⌨️</p>
                         <p className="text-sm text-white font-medium mb-1">No LeetCode activity today</p>
-                        <p className="text-xs text-neutral-600 font-mono">
-                          Solve problems and sync LeetCode in your profile to appear here.
+                        <p className="text-xs text-neutral-600 font-mono uppercase tracking-widest mt-1">
+                          Solve problems and sync LeetCode in your profile to appear here
                         </p>
                       </div>
                     )}
