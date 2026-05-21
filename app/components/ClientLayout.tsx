@@ -67,13 +67,17 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex flex-col">
+    <div className="min-h-screen bg-transparent flex flex-col relative">
+      
+      {/* Ambient background mesh glow and scanlines overlay */}
+      <div className="mesh-glow" />
+      <div className="scanlines" />
       
       {/* Permanent, static Navbar preserving Layout Continuity */}
       <Navbar />
 
       {/* Render children directly for 100% Next.js router compatibility and zero freezes */}
-      <main className="flex-1 flex flex-col">
+      <main className="flex-1 flex flex-col relative z-10">
         <div className="w-full max-w-5xl mx-auto px-8 py-8 flex-1">
           {children}
         </div>

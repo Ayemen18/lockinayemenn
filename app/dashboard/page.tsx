@@ -432,10 +432,10 @@ export default function DashboardPage() {
 
           {/* Today card — spans 2 with internal 2-column checklist HUD */}
           <StaggerItem className="col-span-2">
-            <div className={`backdrop-blur-md border hover:border-neutral-700/60 shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-all duration-300 hover:shadow-[0_4px_32px_rgba(0,0,0,0.55)] border-t-neutral-850/80 rounded-2xl p-5 h-full relative overflow-hidden ${
+            <div className={`premium-card backdrop-blur-lg border shadow-[0_8px_32px_rgba(0,0,0,0.65)] rounded-2xl p-5 h-full relative overflow-hidden ${
               forecastMode 
-                ? 'bg-amber-950/10 border-amber-500/25 shadow-[inset_0_1px_1px_rgba(245,158,11,0.05)]' 
-                : 'bg-neutral-900/30 border-neutral-850 shadow-[inset_0_1px_1px_rgba(255,255,255,0.02)]'
+                ? 'bg-amber-950/5 border-amber-500/20 shadow-[inset_0_1px_1px_rgba(245,158,11,0.04)]' 
+                : 'bg-neutral-950/30 border-neutral-900/40 shadow-[inset_0_1px_1px_rgba(255,255,255,0.015)]'
             }`}>
               
               {/* Soft background glow matching current score tier */}
@@ -609,7 +609,7 @@ export default function DashboardPage() {
 
           {/* Streak Card */}
           <StaggerItem>
-            <div className="bg-neutral-900/30 backdrop-blur-md border border-neutral-850 hover:border-neutral-800/80 shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-all duration-300 hover:shadow-[0_4px_32px_rgba(0,0,0,0.55)] border-t-neutral-850/80 rounded-2xl p-5 h-full flex flex-col justify-between relative overflow-hidden">
+            <div className="premium-card bg-neutral-950/30 backdrop-blur-lg border border-neutral-900/40 shadow-[0_8px_32px_rgba(0,0,0,0.65)] rounded-2xl p-5 h-full flex flex-col justify-between relative overflow-hidden">
               
               {/* Ignition furnace orange glow inside streaking core */}
               {streak > 0 && (
@@ -638,12 +638,12 @@ export default function DashboardPage() {
           {/* Avg + consistency stacked */}
           <StaggerItem>
             <div className="flex flex-col gap-3 h-full">
-              <div className="bg-neutral-900/30 backdrop-blur-md border border-neutral-850 hover:border-neutral-800/80 shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-all duration-300 hover:shadow-[0_4px_32px_rgba(0,0,0,0.55)] border-t-neutral-850/80 rounded-xl p-4 flex-1">
+              <div className="premium-card bg-neutral-950/30 backdrop-blur-lg border border-neutral-900/40 shadow-[0_8px_32px_rgba(0,0,0,0.65)] rounded-xl p-4 flex-1">
                 <p className="text-[9px] text-neutral-500 font-mono uppercase tracking-widest mb-1">Avg score</p>
                 <p className="text-2xl font-extrabold text-white tracking-tight font-mono drop-shadow-[0_0_6px_rgba(255,255,255,0.08)]">{avgScore}%</p>
               </div>
-              <div className="bg-neutral-900/30 backdrop-blur-md border border-neutral-850 hover:border-neutral-800/80 shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-all duration-300 hover:shadow-[0_4px_32px_rgba(0,0,0,0.55)] border-t-neutral-850/80 rounded-xl p-4 flex-1">
-                <p className="text-[9px] text-neutral-555 font-mono uppercase tracking-widest mb-1">Consistency</p>
+              <div className="premium-card bg-neutral-950/30 backdrop-blur-lg border border-neutral-900/40 shadow-[0_8px_32px_rgba(0,0,0,0.65)] rounded-xl p-4 flex-1">
+                <p className="text-[9px] text-neutral-500 font-mono uppercase tracking-widest mb-1">Consistency</p>
                 <p className="text-2xl font-extrabold text-white tracking-tight font-mono drop-shadow-[0_0_6px_rgba(255,255,255,0.08)]">{consistency}%</p>
               </div>
             </div>
@@ -655,7 +655,7 @@ export default function DashboardPage() {
         <FadeIn delay={0.15} className="grid grid-cols-5 gap-3 mb-4">
 
           {/* Heatmap — 3 cols */}
-          <div className="col-span-3 bg-neutral-900/30 backdrop-blur-md border border-neutral-850 hover:border-neutral-800/80 rounded-2xl p-5 flex flex-col justify-between shadow-[0_4px_20px_rgba(0,0,0,0.35)] transition-all duration-300">
+          <div className="col-span-3 premium-card bg-neutral-950/30 backdrop-blur-lg border border-neutral-900/40 shadow-[0_8px_32px_rgba(0,0,0,0.65)] rounded-2xl p-5 flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-4">
                 <p className="text-xs text-neutral-500 font-mono uppercase tracking-widest">30-day consistency</p>
@@ -689,7 +689,7 @@ export default function DashboardPage() {
                       style={{
                         width: '24px',
                         height: '24px',
-                        background: log ? heatColor(log.score) : '#1c1c1c',
+                        background: log ? heatColor(log.score) : '#101012',
                         outline: isToday ? '1.5px solid #10b981' : 'none',
                         outlineOffset: '1.5px',
                         flexShrink: 0,
@@ -715,7 +715,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Bar chart — 2 cols */}
-          <div className="col-span-2 bg-neutral-900/30 backdrop-blur-md border border-neutral-850 hover:border-neutral-800/80 rounded-2xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.35)] transition-all duration-300">
+          <div className="col-span-2 premium-card bg-neutral-950/30 backdrop-blur-lg border border-neutral-900/40 shadow-[0_8px_32px_rgba(0,0,0,0.65)] rounded-2xl p-5">
             <p className="text-xs text-neutral-500 font-mono uppercase tracking-widest mb-4">Last 7 days</p>
             <div className="flex items-end gap-1.5 h-28 relative">
               
@@ -749,7 +749,7 @@ export default function DashboardPage() {
                         style={{
                           width: '100%',
                           borderRadius: '4px 4px 0 0',
-                          background: !log ? '#1c1c1c'
+                          background: !log ? '#101012'
                             : isToday ? 'linear-gradient(to top, #10b981, #34d399)'
                             : log.score >= 90 ? 'linear-gradient(to top, #047857, #10b981)'
                             : log.score >= 75 ? 'linear-gradient(to top, #065f46, #059669)'
@@ -773,7 +773,7 @@ export default function DashboardPage() {
         <FadeIn delay={0.2} className="grid grid-cols-1 lg:grid-cols-5 gap-3 mb-4">
           
           {/* Insights (3 cols) */}
-          <div className="lg:col-span-3 bg-neutral-900/30 backdrop-blur-md border border-neutral-850 rounded-2xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.35)] relative overflow-hidden">
+          <div className="lg:col-span-3 premium-card bg-neutral-950/30 backdrop-blur-lg border border-neutral-900/40 shadow-[0_8px_32px_rgba(0,0,0,0.65)] rounded-2xl p-5 relative overflow-hidden">
             <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.015)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none select-none z-0" />
             
             <div className="absolute top-0 right-0 p-3 text-[9px] text-neutral-600 font-mono select-none">
@@ -824,7 +824,7 @@ export default function DashboardPage() {
           <div className="lg:col-span-2 grid grid-rows-2 gap-3 h-full">
             
             {/* Active Quests */}
-            <div className="bg-neutral-900/30 backdrop-blur-md border border-neutral-850 rounded-2xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.35)] relative overflow-hidden">
+            <div className="premium-card bg-neutral-950/30 backdrop-blur-lg border border-neutral-900/40 shadow-[0_8px_32px_rgba(0,0,0,0.65)] rounded-2xl p-5 relative overflow-hidden">
               <div className="absolute top-0 right-0 p-3 text-[9px] text-neutral-650 font-mono select-none">[ MISSION QUOTAS ]</div>
               <p className="text-xs text-neutral-500 font-mono uppercase tracking-widest mb-3">Active Quests</p>
               
@@ -856,7 +856,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Squad Peer Radar */}
-            <div className="bg-neutral-900/30 backdrop-blur-md border border-neutral-850 rounded-2xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.35)] relative overflow-hidden flex flex-col justify-between">
+            <div className="premium-card bg-neutral-950/30 backdrop-blur-lg border border-neutral-900/40 shadow-[0_8px_32px_rgba(0,0,0,0.65)] rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between">
               <div className="absolute top-0 right-0 p-3 text-[9px] text-neutral-650 font-mono select-none">
                 {squadInfo ? `[ SQUAD: ${squadInfo.squadName.toUpperCase()} ]` : '[ NO ACTIVE POD ]'}
               </div>
@@ -912,7 +912,7 @@ export default function DashboardPage() {
             <p className="text-xs text-neutral-500 font-mono uppercase tracking-widest mb-3">Recent reflections</p>
             <div className="space-y-2.5">
               {[...logs].reverse().filter(l => l.reflection).slice(0, 3).map(log => (
-                <div key={log.date} className="bg-neutral-900/20 backdrop-blur-sm border border-neutral-850 hover:border-neutral-800 rounded-2xl px-5 py-4.5 flex gap-5 items-start hover:shadow-[0_4px_16px_rgba(0,0,0,0.25)] transition-all duration-300">
+                <div key={log.date} className="bg-neutral-950/25 backdrop-blur-md border border-neutral-900/40 hover:border-neutral-800/40 hover:bg-neutral-900/10 rounded-2xl px-5 py-4.5 flex gap-5 items-start hover:shadow-[0_8px_24px_rgba(0,0,0,0.55)] transition-all duration-400">
                   <div className="flex-shrink-0 flex flex-col items-start gap-1">
                     <div className="text-xs text-neutral-400 font-mono uppercase tracking-wider font-semibold">[ LOG: {log.date} ]</div>
                     <div className={`text-[9px] px-2 py-0.5 rounded-full font-mono font-extrabold uppercase tracking-wide ${
